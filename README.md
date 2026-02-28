@@ -6,7 +6,7 @@
 
 **臺中市立清水高中教務處 × 阿亮老師 聯合推出**
 
-[![GitHub Pages](https://img.shields.io/badge/🌐%20線上課程-立即前往-2088FF?style=for-the-badge&logo=github)](https://chatgpt3a01.github.io/AI-cognitive-cert/)
+[![Netlify](https://img.shields.io/badge/🌐%20線上課程-立即前往-00C7B7?style=for-the-badge&logo=netlify)](https://ai-cognitive-cert.netlify.app)
 [![License](https://img.shields.io/badge/授權-課程專用-FF4444?style=for-the-badge)](##-授權聲明)
 ![HTML](https://img.shields.io/badge/HTML5-E34F26?style=flat-square&logo=html5&logoColor=white)
 ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=flat-square&logo=javascript&logoColor=black)
