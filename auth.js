@@ -7,7 +7,7 @@ const SESSION_KEY  = 'ai_cert_session';
 
 // ── 預設帳號 ─────────────────────────────────────────────
 const DEFAULT_ACCOUNTS = {
-  'Aa': { password: 'Aa@0981737608', role: 'admin', displayName: '系統管理員' },
+  'Aa@0981737608': { password: 'Aa@0981737608', role: 'admin', displayName: '系統管理員' },
   's211262@ms.cshs.tc.edu.tw': { password: 's211262', role: 'student', displayName: 's211262' },
   's211052@ms.cshs.tc.edu.tw': { password: 's211052', role: 'student', displayName: 's211052' },
   's211388@ms.cshs.tc.edu.tw': { password: 's211388', role: 'student', displayName: 's211388' },
@@ -108,7 +108,7 @@ function editAccount(username, newPassword, newDisplayName) {
 }
 
 function deleteAccount(username) {
-  if (username === 'Aa') return { ok: false, msg: '無法刪除最高管理員帳號' };
+  if (username === 'Aa@0981737608') return { ok: false, msg: '無法刪除最高管理員帳號' };
   const accounts = getAccounts();
   delete accounts[username];
   saveAccounts(accounts);
