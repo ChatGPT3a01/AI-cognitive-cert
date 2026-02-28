@@ -699,6 +699,12 @@ function submitExam() {
     examQuestions.forEach((q, i) => { if (userAnswers[i] === q.answer) correct++; });
     const score = correct * 5;
     const pass = score >= 80;
+
+    // 儲存成績供師長查看
+    const session = getSession();
+    if (session && session.role === 'student') {
+        saveScore(session.username, score, pass, studentName);
+    }
     const m = Math.floor(timeUsed / 60);
     const s = timeUsed % 60;
 

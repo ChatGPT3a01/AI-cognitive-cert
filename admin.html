@@ -7,10 +7,7 @@
     <script src="auth.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: "Noto Sans TC", "Microsoft JhengHei", sans-serif;
-            background: #f0f4f8; min-height: 100vh;
-        }
+        body { font-family: "Noto Sans TC", "Microsoft JhengHei", sans-serif; background: #f0f4f8; min-height: 100vh; }
         .topbar {
             background: linear-gradient(135deg, #0f2027, #2c5364);
             color: white; padding: 14px 28px;
@@ -27,40 +24,29 @@
         .btn-logout { background: rgba(255,255,255,0.15); color: white; }
         .btn-small:hover { transform: translateY(-1px); }
 
-        .container { max-width: 900px; margin: 0 auto; padding: 28px 20px; }
-        .section-title {
-            font-size: 18px; font-weight: 800; color: #0f2027;
-            margin-bottom: 16px; display: flex; align-items: center; gap: 8px;
-        }
-        .stats-row {
-            display: grid; grid-template-columns: repeat(3, 1fr);
-            gap: 14px; margin-bottom: 28px;
-        }
-        .stat-card {
-            background: white; border-radius: 14px; padding: 18px 22px;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
-        }
+        .container { max-width: 960px; margin: 0 auto; padding: 28px 20px; }
+        .section-title { font-size: 18px; font-weight: 800; color: #0f2027; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+
+        /* 統計 */
+        .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 28px; }
+        .stat-card { background: white; border-radius: 14px; padding: 18px 22px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
         .stat-num { font-size: 34px; font-weight: 900; color: #2c5364; }
+        .stat-num.green { color: #28a745; }
+        .stat-num.amber { color: #e67e22; }
         .stat-label { font-size: 13px; color: #888; margin-top: 4px; }
 
-        .card {
-            background: white; border-radius: 16px;
-            padding: 24px; box-shadow: 0 2px 12px rgba(0,0,0,0.06);
-            margin-bottom: 24px;
-        }
+        .card { background: white; border-radius: 16px; padding: 24px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); margin-bottom: 24px; }
 
-        /* 新增帳號表單 */
-        .add-form {
-            display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end;
-        }
-        .form-field { flex: 1; min-width: 160px; }
+        /* 新增帳號 */
+        .add-form { display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end; }
+        .form-field { flex: 1; min-width: 150px; }
         .form-field label { display: block; font-size: 12px; font-weight: 600; color: #666; margin-bottom: 5px; }
-        .form-field input {
+        .form-field input, .form-field select {
             width: 100%; padding: 10px 13px; border: 1.5px solid #e0e0e0;
             border-radius: 10px; font-size: 14px; outline: none;
-            font-family: inherit; transition: border-color 0.2s;
+            font-family: inherit; transition: border-color 0.2s; background: white;
         }
-        .form-field input:focus { border-color: #2c5364; }
+        .form-field input:focus, .form-field select:focus { border-color: #2c5364; }
         .btn-add {
             padding: 10px 22px; background: linear-gradient(135deg, #28a745, #20c997);
             color: white; border: none; border-radius: 10px;
@@ -69,12 +55,10 @@
         }
         .btn-add:hover { transform: translateY(-1px); box-shadow: 0 4px 15px rgba(40,167,69,0.35); }
 
-        /* 搜尋列 */
-        .search-row {
-            display: flex; gap: 10px; margin-bottom: 14px; align-items: center;
-        }
+        /* 搜尋 */
+        .search-row { display: flex; gap: 10px; margin-bottom: 14px; align-items: center; flex-wrap: wrap; }
         .search-input {
-            flex: 1; padding: 10px 14px; border: 1.5px solid #e0e0e0;
+            flex: 1; min-width: 180px; padding: 10px 14px; border: 1.5px solid #e0e0e0;
             border-radius: 10px; font-size: 14px; outline: none; font-family: inherit;
         }
         .search-input:focus { border-color: #2c5364; }
@@ -85,77 +69,48 @@
         }
         .filter-btn.active { background: #2c5364; color: white; border-color: #2c5364; }
 
-        /* 帳號列表 */
+        /* 表格 */
         .account-table { width: 100%; border-collapse: collapse; }
-        .account-table th {
-            font-size: 12px; color: #888; font-weight: 700;
-            padding: 8px 12px; text-align: left;
-            border-bottom: 2px solid #f0f0f0;
-        }
-        .account-table td {
-            padding: 11px 12px; border-bottom: 1px solid #f5f5f5;
-            font-size: 14px; color: #333;
-        }
+        .account-table th { font-size: 12px; color: #888; font-weight: 700; padding: 8px 12px; text-align: left; border-bottom: 2px solid #f0f0f0; }
+        .account-table td { padding: 11px 12px; border-bottom: 1px solid #f5f5f5; font-size: 14px; color: #333; }
         .account-table tr:last-child td { border-bottom: none; }
         .account-table tr:hover td { background: #f8fbfd; }
-        .role-badge {
-            display: inline-block; padding: 3px 10px;
-            border-radius: 20px; font-size: 11px; font-weight: 700;
-        }
+
+        .role-badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; }
         .role-admin { background: #fff3cd; color: #856404; }
         .role-student { background: #d4edda; color: #155724; }
-        .action-btns { display: flex; gap: 6px; }
-        .btn-edit {
-            padding: 5px 12px; background: #e3f0ff; color: #1a73e8;
-            border: none; border-radius: 7px; font-size: 12px;
-            font-weight: 700; cursor: pointer; font-family: inherit;
-        }
-        .btn-del {
-            padding: 5px 12px; background: #fde8e8; color: #e53935;
-            border: none; border-radius: 7px; font-size: 12px;
-            font-weight: 700; cursor: pointer; font-family: inherit;
-        }
+        .role-teacher { background: #d1ecf1; color: #0c5460; }
+
+        .action-btns { display: flex; gap: 6px; flex-wrap: wrap; }
+        .btn-edit { padding: 5px 12px; background: #e3f0ff; color: #1a73e8; border: none; border-radius: 7px; font-size: 12px; font-weight: 700; cursor: pointer; font-family: inherit; }
+        .btn-del { padding: 5px 12px; background: #fde8e8; color: #e53935; border: none; border-radius: 7px; font-size: 12px; font-weight: 700; cursor: pointer; font-family: inherit; }
         .btn-edit:hover { background: #1a73e8; color: white; }
         .btn-del:hover { background: #e53935; color: white; }
 
-        /* 編輯 Modal */
-        .modal-overlay {
-            display: none; position: fixed; inset: 0;
-            background: rgba(0,0,0,0.5); z-index: 1000;
-            align-items: center; justify-content: center;
+        .teacher-tag {
+            display: inline-block; background: #e8f4f8; color: #0c5460;
+            border-radius: 6px; padding: 2px 8px; font-size: 11px;
         }
+        .no-teacher-tag { color: #ccc; font-size: 12px; }
+
+        /* Modal */
+        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; }
         .modal-overlay.show { display: flex; }
-        .modal {
-            background: white; border-radius: 18px; padding: 32px 28px;
-            width: 100%; max-width: 400px; box-shadow: 0 20px 60px rgba(0,0,0,0.25);
-        }
+        .modal { background: white; border-radius: 18px; padding: 32px 28px; width: 100%; max-width: 420px; box-shadow: 0 20px 60px rgba(0,0,0,0.25); }
         .modal h3 { font-size: 18px; font-weight: 800; color: #0f2027; margin-bottom: 18px; }
         .modal-field { margin-bottom: 14px; }
         .modal-field label { display: block; font-size: 13px; font-weight: 600; color: #666; margin-bottom: 5px; }
-        .modal-field input {
+        .modal-field input, .modal-field select {
             width: 100%; padding: 11px 14px; border: 1.5px solid #e0e0e0;
-            border-radius: 10px; font-size: 15px; outline: none; font-family: inherit;
+            border-radius: 10px; font-size: 15px; outline: none; font-family: inherit; background: white;
         }
-        .modal-field input:focus { border-color: #2c5364; }
+        .modal-field input:focus, .modal-field select:focus { border-color: #2c5364; }
         .modal-field .hint { font-size: 11px; color: #aaa; margin-top: 4px; }
         .modal-btns { display: flex; gap: 10px; margin-top: 20px; }
-        .btn-save {
-            flex: 1; padding: 12px; background: linear-gradient(135deg, #0f2027, #2c5364);
-            color: white; border: none; border-radius: 10px; font-size: 15px;
-            font-weight: 700; cursor: pointer; font-family: inherit;
-        }
-        .btn-cancel {
-            flex: 1; padding: 12px; background: #f0f0f0; color: #555;
-            border: none; border-radius: 10px; font-size: 15px;
-            font-weight: 700; cursor: pointer; font-family: inherit;
-        }
-        .toast {
-            position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%);
-            background: #2c5364; color: white; padding: 12px 28px;
-            border-radius: 30px; font-size: 14px; font-weight: 700;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.2);
-            opacity: 0; transition: opacity 0.3s; pointer-events: none; z-index: 9999;
-        }
+        .btn-save { flex: 1; padding: 12px; background: linear-gradient(135deg, #0f2027, #2c5364); color: white; border: none; border-radius: 10px; font-size: 15px; font-weight: 700; cursor: pointer; font-family: inherit; }
+        .btn-cancel { flex: 1; padding: 12px; background: #f0f0f0; color: #555; border: none; border-radius: 10px; font-size: 15px; font-weight: 700; cursor: pointer; font-family: inherit; }
+
+        .toast { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%); background: #2c5364; color: white; padding: 12px 28px; border-radius: 30px; font-size: 14px; font-weight: 700; box-shadow: 0 6px 20px rgba(0,0,0,0.2); opacity: 0; transition: opacity 0.3s; pointer-events: none; z-index: 9999; }
         .toast.show { opacity: 1; }
         .empty-msg { text-align: center; padding: 24px; color: #aaa; font-size: 14px; }
     </style>
@@ -183,26 +138,38 @@
             <div class="stat-label">學員帳號</div>
         </div>
         <div class="stat-card">
-            <div class="stat-num" id="adminCount">—</div>
+            <div class="stat-num green" id="teacherCount">—</div>
+            <div class="stat-label">師長帳號</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-num amber" id="adminCount">—</div>
             <div class="stat-label">管理員帳號</div>
         </div>
     </div>
 
     <!-- 新增帳號 -->
     <div class="card">
-        <div class="section-title">➕ 新增學員帳號</div>
+        <div class="section-title">➕ 新增帳號</div>
         <div class="add-form">
             <div class="form-field">
-                <label>帳號（Email）</label>
-                <input type="text" id="newUsername" placeholder="s211999@ms.cshs.tc.edu.tw">
+                <label>帳號（Email 或自訂）</label>
+                <input type="text" id="newUsername" placeholder="teacher01@ms.cshs.tc.edu.tw" autocomplete="off">
             </div>
             <div class="form-field">
                 <label>密碼</label>
-                <input type="text" id="newPassword" placeholder="預設密碼">
+                <input type="text" id="newPassword" placeholder="設定密碼" autocomplete="off">
             </div>
             <div class="form-field">
                 <label>顯示名稱（選填）</label>
-                <input type="text" id="newDisplayName" placeholder="留空則使用帳號">
+                <input type="text" id="newDisplayName" placeholder="例如：王老師" autocomplete="off">
+            </div>
+            <div class="form-field" style="max-width:130px;">
+                <label>角色</label>
+                <select id="newRole">
+                    <option value="student">學員</option>
+                    <option value="teacher">師長</option>
+                    <option value="admin">管理員</option>
+                </select>
             </div>
             <button class="btn-add" onclick="doAddAccount()">新增</button>
         </div>
@@ -212,9 +179,10 @@
     <div class="card">
         <div class="section-title">👥 帳號列表</div>
         <div class="search-row">
-            <input class="search-input" id="searchInput" placeholder="🔍 搜尋帳號或名稱..." oninput="renderTable()">
+            <input class="search-input" id="searchInput" placeholder="🔍 搜尋帳號或名稱..." oninput="renderTable()" autocomplete="off">
             <button class="filter-btn active" id="filterAll" onclick="setFilter('all')">全部</button>
             <button class="filter-btn" id="filterStudent" onclick="setFilter('student')">學員</button>
+            <button class="filter-btn" id="filterTeacher" onclick="setFilter('teacher')">師長</button>
             <button class="filter-btn" id="filterAdmin" onclick="setFilter('admin')">管理員</button>
         </div>
         <table class="account-table">
@@ -224,6 +192,7 @@
                     <th>顯示名稱</th>
                     <th>密碼</th>
                     <th>角色</th>
+                    <th>師長歸屬</th>
                     <th>操作</th>
                 </tr>
             </thead>
@@ -239,16 +208,32 @@
         <h3>✏️ 編輯帳號</h3>
         <div class="modal-field">
             <label>帳號</label>
-            <input type="text" id="editUsername" disabled style="background:#f5f5f5; color:#888;">
+            <input type="text" id="editUsername" disabled style="background:#f5f5f5; color:#888;" autocomplete="off">
         </div>
         <div class="modal-field">
             <label>新密碼</label>
-            <input type="text" id="editPassword" placeholder="留空則不修改">
+            <input type="text" id="editPassword" placeholder="留空則不修改" autocomplete="off">
             <div class="hint">留空則保持原密碼不變</div>
         </div>
         <div class="modal-field">
             <label>顯示名稱</label>
-            <input type="text" id="editDisplayName" placeholder="顯示名稱">
+            <input type="text" id="editDisplayName" placeholder="顯示名稱" autocomplete="off">
+        </div>
+        <div class="modal-field" id="editRoleField">
+            <label>角色</label>
+            <select id="editRole">
+                <option value="student">學員</option>
+                <option value="teacher">師長</option>
+                <option value="admin">管理員</option>
+            </select>
+        </div>
+        <!-- 師長歸屬（只有學員才顯示） -->
+        <div class="modal-field" id="teacherAssignField" style="display:none;">
+            <label>師長歸屬</label>
+            <select id="editAssignedTeacher">
+                <option value="">— 未指定師長 —</option>
+            </select>
+            <div class="hint">選擇學員所屬的師長</div>
         </div>
         <div class="modal-btns">
             <button class="btn-cancel" onclick="closeModal()">取消</button>
@@ -257,7 +242,6 @@
     </div>
 </div>
 
-<!-- Toast 提示 -->
 <div class="toast" id="toast"></div>
 
 <script>
@@ -276,12 +260,17 @@ function updateStats() {
     const accounts = listAccounts();
     document.getElementById('totalCount').textContent = accounts.length;
     document.getElementById('studentCount').textContent = accounts.filter(a => a.role === 'student').length;
+    document.getElementById('teacherCount').textContent = accounts.filter(a => a.role === 'teacher').length;
     document.getElementById('adminCount').textContent = accounts.filter(a => a.role === 'admin').length;
+}
+
+function getRoleName(role) {
+    return { admin: '管理員', teacher: '師長', student: '學員' }[role] || role;
 }
 
 function setFilter(f) {
     currentFilter = f;
-    ['all','student','admin'].forEach(id => {
+    ['all','student','teacher','admin'].forEach(id => {
         document.getElementById('filter' + id.charAt(0).toUpperCase() + id.slice(1))
             .classList.toggle('active', id === f);
     });
@@ -306,33 +295,48 @@ function renderTable() {
     }
     empty.style.display = 'none';
 
-    tbody.innerHTML = accounts.map(a => `
-        <tr>
-            <td>${a.username}</td>
-            <td>${a.displayName}</td>
-            <td><code style="background:#f0f0f0;padding:2px 7px;border-radius:5px;font-size:12px;">${a.password}</code></td>
-            <td><span class="role-badge role-${a.role}">${a.role === 'admin' ? '管理員' : '學員'}</span></td>
-            <td>
-                <div class="action-btns">
-                    <button class="btn-edit" onclick="openEdit('${a.username}')">編輯</button>
-                    ${a.username !== 'Aa@0981737608' ? `<button class="btn-del" onclick="doDelete('${a.username}')">刪除</button>` : ''}
-                </div>
-            </td>
-        </tr>
-    `).join('');
+    // 取得師長名稱對照
+    const allAccounts = getAccounts();
+    tbody.innerHTML = accounts.map(a => {
+        let teacherCell = '—';
+        if (a.role === 'student') {
+            if (a.assignedTeacher && allAccounts[a.assignedTeacher]) {
+                teacherCell = `<span class="teacher-tag">👨‍🏫 ${allAccounts[a.assignedTeacher].displayName}</span>`;
+            } else {
+                teacherCell = '<span class="no-teacher-tag">未指定</span>';
+            }
+        }
+        return `
+            <tr>
+                <td style="font-size:12px;max-width:200px;word-break:break-all">${a.username}</td>
+                <td>${a.displayName}</td>
+                <td><code style="background:#f0f0f0;padding:2px 7px;border-radius:5px;font-size:12px;">${a.password}</code></td>
+                <td><span class="role-badge role-${a.role}">${getRoleName(a.role)}</span></td>
+                <td>${teacherCell}</td>
+                <td>
+                    <div class="action-btns">
+                        <button class="btn-edit" onclick="openEdit('${a.username}')">編輯</button>
+                        ${a.username !== 'Aa@0981737608' ? `<button class="btn-del" onclick="doDelete('${a.username}')">刪除</button>` : ''}
+                    </div>
+                </td>
+            </tr>
+        `;
+    }).join('');
 }
 
 function doAddAccount() {
     const username = document.getElementById('newUsername').value.trim();
     const password = document.getElementById('newPassword').value.trim();
     const displayName = document.getElementById('newDisplayName').value.trim();
+    const role = document.getElementById('newRole').value;
     if (!username || !password) { showToast('帳號和密碼不能為空', true); return; }
-    const result = addAccount(username, password, displayName || username);
+    const result = addAccount(username, password, displayName || username, role);
     if (result.ok) {
-        showToast(`✅ 已新增帳號：${username}`);
+        showToast(`✅ 已新增${getRoleName(role)}帳號：${username}`);
         document.getElementById('newUsername').value = '';
         document.getElementById('newPassword').value = '';
         document.getElementById('newDisplayName').value = '';
+        document.getElementById('newRole').value = 'student';
         updateStats(); renderTable();
     } else {
         showToast(result.msg, true);
@@ -346,6 +350,28 @@ function openEdit(username) {
     document.getElementById('editUsername').value = username;
     document.getElementById('editPassword').value = '';
     document.getElementById('editDisplayName').value = a.displayName;
+
+    // 角色欄位（超級管理員不允許修改）
+    const roleField = document.getElementById('editRoleField');
+    if (username === 'Aa@0981737608') {
+        roleField.style.display = 'none';
+    } else {
+        roleField.style.display = 'block';
+        document.getElementById('editRole').value = a.role;
+    }
+
+    // 師長歸屬欄位（只有學員才顯示）
+    const teacherField = document.getElementById('teacherAssignField');
+    if (a.role === 'student') {
+        teacherField.style.display = 'block';
+        const sel = document.getElementById('editAssignedTeacher');
+        const teachers = getTeachers();
+        sel.innerHTML = '<option value="">— 未指定師長 —</option>' +
+            teachers.map(t => `<option value="${t.username}" ${a.assignedTeacher === t.username ? 'selected' : ''}>${t.displayName}（${t.username}）</option>`).join('');
+    } else {
+        teacherField.style.display = 'none';
+    }
+
     document.getElementById('editModal').classList.add('show');
 }
 
@@ -358,9 +384,37 @@ function doEditAccount() {
     const newPw = document.getElementById('editPassword').value.trim();
     const newName = document.getElementById('editDisplayName').value.trim();
     const result = editAccount(editingUsername, newPw || null, newName || null);
+
+    // 更新角色
+    const roleField = document.getElementById('editRoleField');
+    if (roleField.style.display !== 'none') {
+        const newRole = document.getElementById('editRole').value;
+        const accounts = getAccounts();
+        if (accounts[editingUsername]) {
+            const oldRole = accounts[editingUsername].role;
+            accounts[editingUsername].role = newRole;
+            // 切換到學員時補上 assignedTeacher 欄位
+            if (newRole === 'student' && oldRole !== 'student') {
+                accounts[editingUsername].assignedTeacher = null;
+            }
+            // 切換離開學員時移除 assignedTeacher
+            if (newRole !== 'student' && oldRole === 'student') {
+                delete accounts[editingUsername].assignedTeacher;
+            }
+            saveAccounts(accounts);
+        }
+    }
+
+    // 更新師長歸屬（學員專用）
+    const teacherField = document.getElementById('teacherAssignField');
+    if (teacherField.style.display !== 'none') {
+        const selectedTeacher = document.getElementById('editAssignedTeacher').value;
+        assignStudentToTeacher(editingUsername, selectedTeacher || null);
+    }
+
     if (result.ok) {
         showToast(`✅ 已更新帳號：${editingUsername}`);
-        closeModal(); renderTable();
+        closeModal(); updateStats(); renderTable();
     } else {
         showToast(result.msg, true);
     }

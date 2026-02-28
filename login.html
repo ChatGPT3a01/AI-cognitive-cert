@@ -13,35 +13,22 @@
             display: flex; align-items: center; justify-content: center;
             font-family: "Noto Sans TC", "Microsoft JhengHei", sans-serif;
         }
-        .login-wrap {
-            width: 100%; max-width: 420px; padding: 20px;
-        }
+        .login-wrap { width: 100%; max-width: 420px; padding: 20px; }
         .login-card {
-            background: white;
-            border-radius: 24px;
+            background: white; border-radius: 24px;
             padding: 44px 40px 36px;
             box-shadow: 0 24px 80px rgba(0,0,0,0.35);
             text-align: center;
         }
         .login-logo { font-size: 52px; margin-bottom: 12px; }
-        .login-title {
-            font-size: 22px; font-weight: 800; color: #0f2027;
-            margin-bottom: 4px; letter-spacing: 1px;
-        }
-        .login-sub {
-            font-size: 12px; color: #888; margin-bottom: 28px;
-            letter-spacing: 1px;
-        }
+        .login-title { font-size: 22px; font-weight: 800; color: #0f2027; margin-bottom: 4px; letter-spacing: 1px; }
+        .login-sub { font-size: 12px; color: #888; margin-bottom: 28px; letter-spacing: 1px; }
         .form-group { margin-bottom: 16px; text-align: left; }
-        .form-group label {
-            display: block; font-size: 13px; font-weight: 600;
-            color: #555; margin-bottom: 6px;
-        }
+        .form-group label { display: block; font-size: 13px; font-weight: 600; color: #555; margin-bottom: 6px; }
         .form-group input {
             width: 100%; padding: 13px 16px;
             border: 1.5px solid #e0e0e0; border-radius: 12px;
-            font-size: 15px; outline: none; transition: border-color 0.2s;
-            font-family: inherit;
+            font-size: 15px; outline: none; transition: border-color 0.2s; font-family: inherit;
         }
         .form-group input:focus { border-color: #2c5364; }
         .login-btn {
@@ -49,21 +36,57 @@
             background: linear-gradient(135deg, #0f2027, #2c5364);
             color: white; border: none; border-radius: 12px;
             font-size: 17px; font-weight: 700; cursor: pointer;
-            margin-top: 8px; letter-spacing: 2px;
-            transition: all 0.3s;
+            margin-top: 8px; letter-spacing: 2px; transition: all 0.3s;
         }
         .login-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(15,32,39,0.4); }
         .login-btn:active { transform: translateY(0); }
-        .error-msg {
-            color: #e74c3c; font-size: 13px;
-            margin-top: 12px; min-height: 18px;
-            font-weight: 600;
-        }
+        .error-msg { color: #e74c3c; font-size: 13px; margin-top: 12px; min-height: 18px; font-weight: 600; }
         .login-hint {
             margin-top: 20px; padding-top: 18px;
             border-top: 1px solid #f0f0f0;
             font-size: 12px; color: #aaa; line-height: 1.8;
         }
+
+        /* ── 選師長彈窗 ── */
+        .modal-overlay {
+            display: none; position: fixed; inset: 0;
+            background: rgba(0,0,0,0.6); backdrop-filter: blur(4px);
+            z-index: 100; align-items: center; justify-content: center;
+        }
+        .modal-overlay.show { display: flex; }
+        .modal-box {
+            background: white; border-radius: 24px;
+            padding: 40px 36px; max-width: 420px; width: 90%;
+            box-shadow: 0 24px 80px rgba(0,0,0,0.4); text-align: center;
+        }
+        .modal-icon { font-size: 48px; margin-bottom: 12px; }
+        .modal-title { font-size: 20px; font-weight: 800; color: #0f2027; margin-bottom: 6px; }
+        .modal-sub { font-size: 13px; color: #888; margin-bottom: 24px; }
+        .teacher-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; }
+        .teacher-btn {
+            padding: 14px 20px; border: 2px solid #e0e0e0;
+            border-radius: 14px; background: white;
+            font-size: 15px; font-weight: 600; color: #333;
+            cursor: pointer; transition: all 0.2s;
+            display: flex; align-items: center; gap: 12px;
+        }
+        .teacher-btn:hover { border-color: #2c5364; background: #f0f7ff; color: #0f2027; }
+        .teacher-btn.selected { border-color: #2c5364; background: #e8f4fd; color: #0f2027; }
+        .teacher-btn .t-icon { font-size: 24px; }
+        .teacher-btn .t-info { text-align: left; }
+        .teacher-btn .t-name { font-weight: 700; }
+        .teacher-btn .t-acc { font-size: 11px; color: #999; }
+        .no-teacher-note { font-size: 12px; color: #bbb; margin-bottom: 16px; }
+        .confirm-btn {
+            width: 100%; padding: 14px;
+            background: linear-gradient(135deg, #0f2027, #2c5364);
+            color: white; border: none; border-radius: 12px;
+            font-size: 16px; font-weight: 700; cursor: pointer;
+            letter-spacing: 1px; opacity: 0.4; transition: all 0.3s;
+        }
+        .confirm-btn.active { opacity: 1; }
+        .confirm-btn.active:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(15,32,39,0.4); }
+        .empty-teachers { color: #aaa; font-size: 14px; padding: 20px; }
     </style>
 </head>
 <body>
@@ -91,26 +114,52 @@
     </div>
 </div>
 
+<!-- 選師長彈窗 -->
+<div class="modal-overlay" id="teacherModal">
+    <div class="modal-box">
+        <div class="modal-icon">👨‍🏫</div>
+        <div class="modal-title">請選擇您的師長</div>
+        <div class="modal-sub">選擇後由師長追蹤您的學習狀況，往後不需再選擇</div>
+        <div class="teacher-list" id="teacherList"></div>
+        <div class="no-teacher-note">若師長尚未建立帳號，請先暫時略過</div>
+        <button class="confirm-btn" id="confirmBtn" onclick="confirmTeacher()">確認選擇</button>
+    </div>
+</div>
+
 <script>
     // 已登入則跳轉
     if (getSession()) {
         const s = getSession();
-        window.location.href = s.role === 'admin' ? 'admin.html' : 'index.html';
+        if (s.role === 'admin') window.location.href = 'admin.html';
+        else if (s.role === 'teacher') window.location.href = 'teacher.html';
+        else window.location.href = 'index.html';
     }
+
+    let selectedTeacher = null;
+    let pendingUsername = null;
 
     function doLogin() {
         const username = document.getElementById('username').value.trim();
         const password = document.getElementById('password').value.trim();
         const errEl = document.getElementById('loginError');
 
-        if (!username || !password) {
-            errEl.textContent = '請輸入帳號和密碼';
-            return;
-        }
+        if (!username || !password) { errEl.textContent = '請輸入帳號和密碼'; return; }
 
         const result = authLogin(username, password);
         if (result.ok) {
-            window.location.href = result.role === 'admin' ? 'admin.html' : 'index.html';
+            if (result.role === 'admin') {
+                window.location.href = 'admin.html';
+            } else if (result.role === 'teacher') {
+                window.location.href = 'teacher.html';
+            } else {
+                // 學員：檢查是否已有師長
+                if (!result.assignedTeacher) {
+                    pendingUsername = username;
+                    showTeacherModal();
+                } else {
+                    window.location.href = 'index.html';
+                }
+            }
         } else {
             errEl.textContent = '❌ 帳號或密碼錯誤，請重新輸入';
             document.getElementById('password').value = '';
@@ -118,10 +167,45 @@
         }
     }
 
-    // 按 Enter 登入
-    document.addEventListener('keydown', e => {
-        if (e.key === 'Enter') doLogin();
-    });
+    function showTeacherModal() {
+        const teachers = getTeachers();
+        const list = document.getElementById('teacherList');
+        if (teachers.length === 0) {
+            list.innerHTML = '<div class="empty-teachers">目前尚無師長帳號<br>請直接進入課程</div>';
+            document.getElementById('confirmBtn').textContent = '略過，進入課程';
+            document.getElementById('confirmBtn').classList.add('active');
+        } else {
+            list.innerHTML = teachers.map(t => `
+                <button class="teacher-btn" id="tb_${t.username}" onclick="selectTeacher('${t.username}')">
+                    <span class="t-icon">👨‍🏫</span>
+                    <div class="t-info">
+                        <div class="t-name">${t.displayName}</div>
+                        <div class="t-acc">${t.username}</div>
+                    </div>
+                </button>
+            `).join('');
+        }
+        document.getElementById('teacherModal').classList.add('show');
+    }
+
+    function selectTeacher(username) {
+        selectedTeacher = username;
+        document.querySelectorAll('.teacher-btn').forEach(b => b.classList.remove('selected'));
+        const btn = document.getElementById('tb_' + username);
+        if (btn) btn.classList.add('selected');
+        document.getElementById('confirmBtn').classList.add('active');
+    }
+
+    function confirmTeacher() {
+        const btn = document.getElementById('confirmBtn');
+        if (!btn.classList.contains('active')) return;
+        if (selectedTeacher && pendingUsername) {
+            assignStudentToTeacher(pendingUsername, selectedTeacher);
+        }
+        window.location.href = 'index.html';
+    }
+
+    document.addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
 </script>
 </body>
 </html>
