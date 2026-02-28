@@ -131,7 +131,6 @@
     if (getSession()) {
         const s = getSession();
         if (s.role === 'admin') window.location.href = 'admin.html';
-        else if (s.role === 'teacher') window.location.href = 'teacher.html';
         else window.location.href = 'index.html';
     }
 
@@ -150,7 +149,7 @@
             if (result.role === 'admin') {
                 window.location.href = 'admin.html';
             } else if (result.role === 'teacher') {
-                window.location.href = 'teacher.html';
+                window.location.href = 'index.html';
             } else {
                 // 學員：檢查是否已有師長
                 if (!result.assignedTeacher) {

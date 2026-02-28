@@ -361,6 +361,30 @@
 </head>
 <body>
 <script>requireAuth();</script>
+    <!-- 師長專用頂部導覽列 -->
+    <div id="teacherBar" style="display:none; background:rgba(255,255,255,0.12); backdrop-filter:blur(8px); padding:12px 28px; position:sticky; top:0; z-index:50; border-bottom:1px solid rgba(255,255,255,0.15);">
+        <div style="max-width:1200px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;">
+            <div style="display:flex; align-items:center; gap:12px;">
+                <span style="font-size:20px;">👨‍🏫</span>
+                <span id="teacherWelcome" style="color:white; font-size:15px; font-weight:700;"></span>
+                <span style="background:linear-gradient(90deg,#f7971e,#ffd200); color:#1a1a1a; padding:3px 12px; border-radius:20px; font-size:12px; font-weight:700;">師長</span>
+            </div>
+            <div style="display:flex; align-items:center; gap:12px;">
+                <a href="teacher.html" style="background:linear-gradient(135deg,#2d6a4f,#40916c); color:white; padding:8px 20px; border-radius:20px; font-size:14px; font-weight:700; text-decoration:none; transition:all 0.3s; display:flex; align-items:center; gap:6px;">📋 師長面板（查看學員成績）</a>
+                <button onclick="authLogout()" style="background:rgba(255,255,255,0.15); color:white; border:1px solid rgba(255,255,255,0.3); padding:8px 18px; border-radius:20px; font-size:13px; cursor:pointer; font-family:inherit;">🚪 登出</button>
+            </div>
+        </div>
+    </div>
+    <script>
+    (function() {
+        const s = getSession();
+        if (s && s.role === 'teacher') {
+            document.getElementById('teacherBar').style.display = 'block';
+            document.getElementById('teacherWelcome').textContent = '歡迎，' + s.displayName;
+        }
+    })();
+    </script>
+
     <div class="container">
 
         <!-- Hero Section -->

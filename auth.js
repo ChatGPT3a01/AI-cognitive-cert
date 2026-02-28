@@ -46,9 +46,21 @@ function getAccounts() {
   const saved = localStorage.getItem(ACCOUNTS_KEY);
   if (!saved) {
     localStorage.setItem(ACCOUNTS_KEY, JSON.stringify(DEFAULT_ACCOUNTS));
-    return DEFAULT_ACCOUNTS;
+    return { ...DEFAULT_ACCOUNTS };
   }
-  return JSON.parse(saved);
+  // 合併新增的預設帳號（不覆蓋已存在的帳號）
+  const accounts = JSON.parse(saved);
+  let updated = false;
+  for (const [username, data] of Object.entries(DEFAULT_ACCOUNTS)) {
+    if (!accounts[username]) {
+      accounts[username] = data;
+      updated = true;
+    }
+  }
+  if (updated) {
+    localStorage.setItem(ACCOUNTS_KEY, JSON.stringify(accounts));
+  }
+  return accounts;
 }
 
 function saveAccounts(accounts) {
