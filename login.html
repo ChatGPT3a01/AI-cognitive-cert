@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登入 | AI 認知學習應用認證</title>
+    <script src="auth.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+            display: flex; align-items: center; justify-content: center;
+            font-family: "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+        }
+        .login-wrap {
+            width: 100%; max-width: 420px; padding: 20px;
+        }
+        .login-card {
+            background: white;
+            border-radius: 24px;
+            padding: 44px 40px 36px;
+            box-shadow: 0 24px 80px rgba(0,0,0,0.35);
+            text-align: center;
+        }
+        .login-logo { font-size: 52px; margin-bottom: 12px; }
+        .login-title {
+            font-size: 22px; font-weight: 800; color: #0f2027;
+            margin-bottom: 4px; letter-spacing: 1px;
+        }
+        .login-sub {
+            font-size: 12px; color: #888; margin-bottom: 28px;
+            letter-spacing: 1px;
+        }
+        .form-group { margin-bottom: 16px; text-align: left; }
+        .form-group label {
+            display: block; font-size: 13px; font-weight: 600;
+            color: #555; margin-bottom: 6px;
+        }
+        .form-group input {
+            width: 100%; padding: 13px 16px;
+            border: 1.5px solid #e0e0e0; border-radius: 12px;
+            font-size: 15px; outline: none; transition: border-color 0.2s;
+            font-family: inherit;
+        }
+        .form-group input:focus { border-color: #2c5364; }
+        .login-btn {
+            width: 100%; padding: 14px;
+            background: linear-gradient(135deg, #0f2027, #2c5364);
+            color: white; border: none; border-radius: 12px;
+            font-size: 17px; font-weight: 700; cursor: pointer;
+            margin-top: 8px; letter-spacing: 2px;
+            transition: all 0.3s;
+        }
+        .login-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(15,32,39,0.4); }
+        .login-btn:active { transform: translateY(0); }
+        .error-msg {
+            color: #e74c3c; font-size: 13px;
+            margin-top: 12px; min-height: 18px;
+            font-weight: 600;
+        }
+        .login-hint {
+            margin-top: 20px; padding-top: 18px;
+            border-top: 1px solid #f0f0f0;
+            font-size: 12px; color: #aaa; line-height: 1.8;
+        }
+    </style>
+</head>
+<body>
+<div class="login-wrap">
+    <div class="login-card">
+        <div class="login-logo">🎓</div>
+        <div class="login-title">AI 認知學習應用認證</div>
+        <div class="login-sub">AI Cognitive Learning Application Certification</div>
+
+        <div class="form-group">
+            <label>帳號</label>
+            <input type="text" id="username" placeholder="請輸入帳號" autocomplete="username">
+        </div>
+        <div class="form-group">
+            <label>密碼</label>
+            <input type="password" id="password" placeholder="請輸入密碼" autocomplete="current-password">
+        </div>
+        <button class="login-btn" onclick="doLogin()">登　入</button>
+        <div class="error-msg" id="loginError"></div>
+
+        <div class="login-hint">
+            學員請使用學校 Email 帳號登入<br>
+            初次使用請洽課程講師
+        </div>
+    </div>
+</div>
+
+<script>
+    // 已登入則跳轉
+    if (getSession()) {
+        const s = getSession();
+        window.location.href = s.role === 'admin' ? 'admin.html' : 'index.html';
+    }
+
+    function doLogin() {
+        const username = document.getElementById('username').value.trim();
+        const password = document.getElementById('password').value.trim();
+        const errEl = document.getElementById('loginError');
+
+        if (!username || !password) {
+            errEl.textContent = '請輸入帳號和密碼';
+            return;
+        }
+
+        const result = authLogin(username, password);
+        if (result.ok) {
+            window.location.href = result.role === 'admin' ? 'admin.html' : 'index.html';
+        } else {
+            errEl.textContent = '❌ 帳號或密碼錯誤，請重新輸入';
+            document.getElementById('password').value = '';
+            document.getElementById('password').focus();
+        }
+    }
+
+    // 按 Enter 登入
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Enter') doLogin();
+    });
+</script>
+</body>
+</html>

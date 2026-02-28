@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎓 AI 認知學習應用認證 | 臺中市立清水高中</title>
+    <script src="auth.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Microsoft JhengHei', 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+            color: #fff;
+        }
+
+        .container { max-width: 1200px; margin: 0 auto; }
+
+        /* === Hero Header === */
+        .hero {
+            text-align: center;
+            padding: 60px 20px;
+            animation: fadeInDown 0.8s ease;
+        }
+
+        .hero .badge {
+            display: inline-block;
+            background: linear-gradient(90deg, #f7971e, #ffd200);
+            color: #1a1a1a;
+            padding: 6px 20px;
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+        }
+
+        .hero h1 {
+            font-size: 56px;
+            font-weight: 900;
+            line-height: 1.2;
+            margin-bottom: 16px;
+            text-shadow: 0 4px 15px rgba(0,0,0,0.4);
+        }
+
+        .hero h1 span {
+            background: linear-gradient(90deg, #f7971e, #ffd200);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            font-size: 22px;
+            opacity: 0.85;
+            max-width: 650px;
+            margin: 0 auto 30px;
+            line-height: 1.7;
+        }
+
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            flex-wrap: wrap;
+            margin-top: 30px;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-num {
+            font-size: 36px;
+            font-weight: 800;
+            color: #ffd200;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.75;
+            margin-top: 4px;
+        }
+
+        /* === 面試問題警示區 === */
+        .interview-alert {
+            background: rgba(247, 151, 30, 0.15);
+            border: 2px solid rgba(247, 151, 30, 0.5);
+            border-radius: 20px;
+            padding: 35px 40px;
+            margin-bottom: 50px;
+            animation: fadeInUp 0.8s ease 0.2s both;
+        }
+
+        .interview-alert h2 {
+            font-size: 24px;
+            color: #ffd200;
+            margin-bottom: 20px;
+        }
+
+        .question-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 15px;
+        }
+
+        .question-item {
+            background: rgba(255,255,255,0.08);
+            border-radius: 12px;
+            padding: 18px 22px;
+            font-size: 16px;
+            line-height: 1.6;
+            border-left: 4px solid #f7971e;
+        }
+
+        /* === 課程亮點 === */
+        .highlights-section {
+            background: rgba(255,255,255,0.07);
+            border-radius: 24px;
+            padding: 40px;
+            margin-bottom: 50px;
+            animation: fadeInUp 0.8s ease 0.3s both;
+        }
+
+        .section-title {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .highlights-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+        }
+
+        .highlight-card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+            border-radius: 16px;
+            padding: 25px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.15);
+            transition: transform 0.3s, border-color 0.3s;
+        }
+
+        .highlight-card:hover {
+            transform: translateY(-6px);
+            border-color: #ffd200;
+        }
+
+        .highlight-card .icon { font-size: 40px; margin-bottom: 14px; }
+        .highlight-card h3 { font-size: 17px; margin-bottom: 8px; color: #ffd200; }
+        .highlight-card p { font-size: 14px; opacity: 0.8; line-height: 1.6; }
+
+        /* === 課程成果 === */
+        .outcomes-section {
+            background: rgba(255,255,255,0.07);
+            border-radius: 24px;
+            padding: 40px;
+            margin-bottom: 50px;
+            animation: fadeInUp 0.8s ease 0.4s both;
+        }
+
+        .outcome-items {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 10px;
+        }
+
+        .outcome-card {
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            border-radius: 16px;
+            padding: 28px;
+            border: 1px solid rgba(255,255,255,0.15);
+        }
+
+        .outcome-card .icon { font-size: 36px; margin-bottom: 14px; display: block; }
+        .outcome-card h3 { font-size: 18px; margin-bottom: 8px; }
+        .outcome-card p { font-size: 14px; opacity: 0.8; line-height: 1.6; }
+
+        /* === 課程單元 === */
+        .units-section {
+            margin-bottom: 50px;
+            animation: fadeInUp 0.8s ease 0.5s both;
+        }
+
+        .day-block {
+            background: rgba(255,255,255,0.07);
+            border-radius: 24px;
+            padding: 35px;
+            margin-bottom: 25px;
+            border-top: 4px solid;
+        }
+
+        .day-block.day1 { border-color: #4facfe; }
+        .day-block.day2 { border-color: #f7971e; }
+
+        .day-label {
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            opacity: 0.7;
+            margin-bottom: 8px;
+        }
+
+        .day-title {
+            font-size: 26px;
+            font-weight: 700;
+            margin-bottom: 25px;
+        }
+
+        .units-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 18px;
+        }
+
+        .unit-card {
+            background: rgba(255,255,255,0.1);
+            border-radius: 16px;
+            padding: 24px;
+            text-decoration: none;
+            color: white;
+            transition: all 0.3s;
+            border: 1px solid rgba(255,255,255,0.15);
+            display: block;
+        }
+
+        .unit-card:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateY(-5px);
+            border-color: rgba(255,255,255,0.4);
+        }
+
+        .unit-time {
+            font-size: 12px;
+            opacity: 0.6;
+            margin-bottom: 8px;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        .unit-num {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 6px;
+            color: #ffd200;
+        }
+
+        .unit-title {
+            font-size: 17px;
+            font-weight: 600;
+            line-height: 1.5;
+            margin-bottom: 10px;
+        }
+
+        .unit-desc {
+            font-size: 13px;
+            opacity: 0.7;
+            line-height: 1.6;
+        }
+
+        /* === 學習單區 === */
+        .worksheets-section {
+            background: rgba(255,255,255,0.07);
+            border-radius: 24px;
+            padding: 40px;
+            margin-bottom: 50px;
+            animation: fadeInUp 0.8s ease 0.6s both;
+        }
+
+        .worksheets-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 18px;
+            margin-top: 10px;
+        }
+
+        .ws-card {
+            background: linear-gradient(135deg, #11998e, #38ef7d);
+            border-radius: 16px;
+            padding: 28px;
+            text-decoration: none;
+            color: #1a1a1a;
+            transition: all 0.3s;
+            display: block;
+        }
+
+        .ws-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(56, 239, 125, 0.3);
+        }
+
+        .ws-card .icon { font-size: 36px; margin-bottom: 14px; display: block; }
+        .ws-card h3 { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+        .ws-card p { font-size: 14px; opacity: 0.75; line-height: 1.6; }
+
+        /* === Footer === */
+        .footer {
+            background: rgba(255,255,255,0.08);
+            border-radius: 24px;
+            padding: 45px;
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        .footer h3 { font-size: 26px; margin-bottom: 8px; }
+        .footer p { opacity: 0.75; margin-bottom: 25px; }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+        }
+
+        .footer-link {
+            background: rgba(255,255,255,0.15);
+            color: white;
+            padding: 12px 28px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 15px;
+            transition: all 0.3s;
+        }
+
+        .footer-link:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-3px);
+        }
+
+        .copyright {
+            font-size: 14px;
+            opacity: 0.6;
+            margin-top: 20px;
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 34px; }
+            .hero p { font-size: 17px; }
+            .hero-stats { gap: 25px; }
+        }
+    </style>
+</head>
+<body>
+<script>requireAuth();</script>
+    <div class="container">
+
+        <!-- Hero Section -->
+        <div class="hero">
+            <h1>🎓 AI <span>即戰力</span> 認證班</h1>
+            <p style="font-size:18px; color:#ffd200; margin-bottom:6px; font-weight:700;">AI 認知學習應用認證</p>
+            <p style="font-size:14px; opacity:0.6; margin-bottom:16px; letter-spacing:1px;">AI Cognitive Learning Application Certification</p>
+            <p>從「會用 AI」到「能清楚說明我如何用 AI 學習」<br>讓 AI 成為你升學的最強亮點</p>
+        </div>
+
+        <!-- 面試警示 -->
+        <div class="interview-alert">
+            <h2>⚠️ 升大學面試，教授一定會問你...</h2>
+            <div class="question-list">
+                <div class="question-item">✔ 你如何使用 AI 幫助學習？</div>
+                <div class="question-item">✔ 你未來如何在本科系中運用 AI？</div>
+                <div class="question-item">✔ 你怎麼看待 AI 對未來職涯的影響？</div>
+                <div class="question-item">✔ 你有沒有使用 AI 完成過什麼作品？</div>
+            </div>
+            <p style="margin-top: 20px; opacity: 0.8; font-size: 15px;">你能回答得<strong style="color:#ffd200">有深度、有案例、有成果</strong>嗎？這門課就是為此而生。</p>
+        </div>
+
+        <!-- 課程亮點 -->
+        <div class="highlights-section">
+            <div class="section-title">🚀 課程五大亮點</div>
+            <div class="highlights-grid">
+                <div class="highlight-card">
+                    <div class="icon">🧠</div>
+                    <h3>建立 AI 基本素養</h3>
+                    <p>不再只會說 ChatGPT，認識完整 AI 工具生態系</p>
+                </div>
+                <div class="highlight-card">
+                    <div class="icon">📚</div>
+                    <h3>AI 融入學習實戰</h3>
+                    <p>學會在各科學習中有效運用 AI，提升學習效率</p>
+                </div>
+                <div class="highlight-card">
+                    <div class="icon">📄</div>
+                    <h3>產出學習歷程證據</h3>
+                    <p>完成可放入學習歷程檔案的 AI 學習成果報告</p>
+                </div>
+                <div class="highlight-card">
+                    <div class="icon">🎤</div>
+                    <h3>準備高分面試稿</h3>
+                    <p>從容應對教授提問，回答有深度有案例</p>
+                </div>
+                <div class="highlight-card">
+                    <div class="icon">🏅</div>
+                    <h3>取得認證證書</h3>
+                    <p>取得「AI 學習應用認證」證書，增強申請資料</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 課程成果 -->
+        <div class="outcomes-section">
+            <div class="section-title">📦 課程成果直接帶走</div>
+            <div class="outcome-items">
+                <div class="outcome-card">
+                    <span class="icon">📘</span>
+                    <h3>AI 學習實作紀錄</h3>
+                    <p>完整記錄你在課程中使用 AI 的學習過程與心得</p>
+                </div>
+                <div class="outcome-card">
+                    <span class="icon">📄</span>
+                    <h3>AI 應用成果報告</h3>
+                    <p>結構化呈現你如何用 AI 解決學習問題的完整報告</p>
+                </div>
+                <div class="outcome-card">
+                    <span class="icon">🎤</span>
+                    <h3>面試回答腳本</h3>
+                    <p>針對 AI 相關面試問題，量身打造的專業回答稿</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 課程單元 -->
+        <div class="units-section">
+            <div class="section-title">📅 課程架構</div>
+
+            <!-- Chapter 1 -->
+            <div class="day-block day1">
+                <div class="day-label">第一章</div>
+                <div class="day-title">🌅 第一章：建立基礎 × 學以致用</div>
+                <div class="units-grid">
+                    <a href="Unit1_AI素養入門.html" class="unit-card">
+                        <div class="unit-num">Unit 1</div>
+                        <div class="unit-title">AI 素養入門——我不只會 ChatGPT！</div>
+                        <div class="unit-desc">認識 AI 工具全貌、了解 AI 能力邊界、建立正確使用觀念</div>
+                    </a>
+                    <a href="Unit2_AI學習應用.html" class="unit-card">
+                        <div class="unit-num">Unit 2</div>
+                        <div class="unit-title">AI × 學習 = 超能力——融入學科實戰</div>
+                        <div class="unit-desc">提示詞設計技巧、各科 AI 應用策略、實作演練</div>
+                    </a>
+                    <a href="Unit3_成果紀錄.html" class="unit-card">
+                        <div class="unit-num">Unit 3</div>
+                        <div class="unit-title">讓 AI 幫我紀錄學習——成果文件化</div>
+                        <div class="unit-desc">學習歷程文件化技巧、AI 學習紀錄三要素、填寫實作紀錄表</div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Chapter 2 -->
+            <div class="day-block day2">
+                <div class="day-label">第二章</div>
+                <div class="day-title">🌄 第二章：報告產出 × 面試決勝</div>
+                <div class="units-grid">
+                    <a href="Unit4_面試準備.html" class="unit-card">
+                        <div class="unit-num">Unit 4</div>
+                        <div class="unit-title">面試決勝——AI 應用的完美答題公式</div>
+                        <div class="unit-desc">面試官想聽什麼、答題框架 STAR-AI、撰寫個人回答腳本</div>
+                    </a>
+                    <a href="Unit4_面試準備.html#presentation" class="unit-card">
+                        <div class="unit-num">發表</div>
+                        <div class="unit-title">上台發表 + 同儕互評</div>
+                        <div class="unit-desc">3 分鐘模擬面試發表、同儕回饋與優化</div>
+                    </a>
+                    <a href="exam.html" class="unit-card">
+                        <div class="unit-num">🏅</div>
+                        <div class="unit-title">認證考核 × 頒獎典禮</div>
+                        <div class="unit-desc">隨機抽 20 題，80 分通過，頒發「AI 認知學習應用認證」證書</div>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- 學習單 -->
+        <div class="worksheets-section">
+            <div class="section-title">📋 學習單 & 工作單</div>
+            <div class="worksheets-grid">
+                <a href="worksheet_AI學習紀錄.html" class="ws-card">
+                    <span class="icon">📘</span>
+                    <h3>學習單 1：AI 學習實作紀錄</h3>
+                    <p>記錄每次使用 AI 的情境、過程與反思，建立個人 AI 學習軌跡</p>
+                </a>
+                <a href="worksheet_成果報告.html" class="ws-card">
+                    <span class="icon">📄</span>
+                    <h3>學習單 2：AI 應用成果報告</h3>
+                    <p>結構化撰寫你的 AI 應用成果，可直接放入學習歷程檔案</p>
+                </a>
+                <a href="worksheet_面試腳本.html" class="ws-card">
+                    <span class="icon">🎤</span>
+                    <h3>學習單 3：面試回答腳本</h3>
+                    <p>依據 STAR-AI 框架，打造個人專屬的面試回答稿</p>
+                </a>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <h3>課程資源 & 聯絡老師</h3>
+            <p>有問題或想了解更多，歡迎透過以下方式聯絡阿亮老師</p>
+            <div class="footer-links">
+                <a href="https://www.youtube.com/@Liang-yt02" target="_blank" class="footer-link">🎥 YouTube</a>
+                <a href="https://www.facebook.com/groups/2754139931432955" target="_blank" class="footer-link">📘 Facebook 社團</a>
+                <a href="mailto:3a01chatgpt@gmail.com" class="footer-link">📧 Email 聯絡</a>
+            </div>
+            <div class="copyright">© 2026 阿亮老師（曾慶良）版權所有 | 本課程教材僅供學員學習使用</div>
+            <div style="margin-top:16px;">
+                <button onclick="authLogout()" style="background:rgba(255,255,255,0.15);color:white;border:1px solid rgba(255,255,255,0.3);padding:8px 24px;border-radius:20px;font-size:13px;cursor:pointer;font-family:inherit;">🚪 登出</button>
+            </div>
+        </div>
+
+    </div>
+</body>
+</html>

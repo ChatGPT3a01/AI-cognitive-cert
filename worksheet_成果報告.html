@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>學習單 2：AI 應用成果報告</title>
+    <script src="auth.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Microsoft JhengHei', 'Segoe UI', Arial, sans-serif; background: #f0f4f8; color: #333; padding: 20px; }
+        .page { max-width: 900px; margin: 0 auto; background: white; border-radius: 16px; box-shadow: 0 8px 30px rgba(0,0,0,0.1); padding: 50px; margin-bottom: 30px; }
+        .page-header { background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460); color: white; border-radius: 12px; padding: 30px; margin-bottom: 35px; text-align: center; }
+        .page-header .school { font-size: 13px; opacity: 0.7; letter-spacing: 2px; margin-bottom: 5px; }
+        .page-header h1 { font-size: 26px; margin-bottom: 5px; }
+        .page-header .sub { font-size: 14px; opacity: 0.8; }
+        .page-header .cert-name { display: inline-block; background: rgba(255,215,0,0.25); border: 1px solid rgba(255,215,0,0.5); border-radius: 20px; padding: 4px 18px; font-size: 13px; color: #ffd200; margin-top: 10px; }
+        .student-info { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-bottom: 30px; }
+        .info-field { border-bottom: 2px solid #ddd; padding: 8px 0; }
+        .info-label { font-size: 12px; color: #999; margin-bottom: 5px; }
+        .info-input { font-size: 16px; border: none; outline: none; width: 100%; font-family: inherit; background: transparent; }
+        .section-title { background: linear-gradient(90deg, #1a1a2e, #0f3460); color: white; padding: 10px 20px; border-radius: 8px; font-size: 16px; font-weight: 700; margin: 25px 0 15px; }
+        .field-group { margin-bottom: 22px; }
+        .field-label { font-size: 14px; font-weight: 700; color: #555; margin-bottom: 8px; }
+        .text-input { width: 100%; border: 2px solid #e0e0e0; border-radius: 10px; padding: 12px 16px; font-size: 15px; font-family: inherit; resize: vertical; min-height: 60px; transition: border-color 0.3s; outline: none; }
+        .text-input:focus { border-color: #0f3460; }
+        .text-input.large { min-height: 110px; }
+        .text-input.xlarge { min-height: 150px; }
+        .hint { font-size: 13px; color: #888; margin-top: 5px; line-height: 1.6; font-style: italic; }
+        .star-ai-framework { background: #f8f7ff; border: 2px solid #7c3aed; border-radius: 12px; padding: 20px; margin-bottom: 25px; }
+        .star-ai-framework h3 { color: #7c3aed; margin-bottom: 15px; font-size: 16px; }
+        .star-row { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 18px; }
+        .star-letter { background: #7c3aed; color: white; border-radius: 50%; width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 800; flex-shrink: 0; }
+        .star-content { flex: 1; }
+        .star-content label { display: block; font-size: 13px; font-weight: 700; color: #7c3aed; margin-bottom: 5px; }
+        .star-input { width: 100%; border: 1px solid #ddd6fe; border-radius: 8px; padding: 10px 14px; font-size: 14px; font-family: inherit; resize: vertical; min-height: 60px; outline: none; transition: border-color 0.3s; }
+        .star-input:focus { border-color: #7c3aed; }
+        .highlight-box { background: linear-gradient(135deg, #ede9fe, #fce7f3); border-radius: 12px; padding: 22px; margin: 18px 0; border-left: 5px solid #7c3aed; }
+        .highlight-box h3 { color: #4c1d95; margin-bottom: 10px; font-size: 17px; }
+        .divider { border: none; border-top: 2px dashed #e0e0e0; margin: 30px 0; }
+        .submit-area { text-align: center; margin-top: 35px; }
+        .btn-print { background: linear-gradient(135deg, #1a1a2e, #0f3460); color: white; border: none; padding: 14px 40px; border-radius: 30px; font-size: 16px; font-weight: 700; cursor: pointer; margin: 0 10px; transition: all 0.3s; }
+        .btn-print:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(26,26,46,0.3); }
+        .btn-clear { background: #f0f0f0; color: #555; border: none; padding: 14px 30px; border-radius: 30px; font-size: 15px; cursor: pointer; margin: 0 10px; transition: all 0.3s; }
+        .btn-clear:hover { background: #e0e0e0; }
+        .footer-note { text-align: center; font-size: 13px; color: #999; margin-top: 20px; }
+        @media print {
+            body { background: white; padding: 0; }
+            .page { box-shadow: none; margin: 0; border-radius: 0; }
+            .submit-area { display: none; }
+        }
+    </style>
+</head>
+<body>
+<script>requireAuth();</script>
+<div class="page">
+    <div class="page-header">
+        <div class="school">AI 認知學習應用認證</div>
+        <h1>📄 學習單 2：AI 應用成果報告</h1>
+        <div class="sub">AI Application Achievement Report</div>
+        <div class="cert-name">AI 認知學習應用認證</div>
+    </div>
+
+    <div class="student-info">
+        <div class="info-field">
+            <div class="info-label">姓名</div>
+            <input class="info-input" type="text" placeholder="請填寫姓名">
+        </div>
+        <div class="info-field">
+            <div class="info-label">班級</div>
+            <input class="info-input" type="text" placeholder="年 班">
+        </div>
+        <div class="info-field">
+            <div class="info-label">撰寫日期</div>
+            <input class="info-input" type="date" id="dateInput">
+        </div>
+    </div>
+
+    <!-- 報告主題 -->
+    <div class="section-title">📌 Section 1：報告主題</div>
+    <div class="field-group">
+        <div class="field-label">報告標題</div>
+        <input type="text" class="text-input" style="min-height:auto;" placeholder="為你的成果報告取一個具體的標題，例：「用 Claude 的費曼技巧突破生物學習瓶頸」">
+    </div>
+    <div class="field-group">
+        <div class="field-label">選擇這個主題的原因</div>
+        <textarea class="text-input large" placeholder="為什麼你選擇這個 AI 應用案例作為報告主題？它對你的學習有什麼特別的意義？"></textarea>
+    </div>
+
+    <!-- STAR-AI 框架 -->
+    <div class="section-title">⭐ Section 2：STAR-AI 成果框架</div>
+    <p style="margin-bottom:18px; color:#555; font-size:15px;">使用 STAR-AI 框架，有結構地呈現你的 AI 應用成果：</p>
+
+    <div class="star-ai-framework">
+        <div class="star-row">
+            <div class="star-letter">S</div>
+            <div class="star-content">
+                <label>Situation 情境 — 當時的學習背景是什麼？</label>
+                <textarea class="star-input" placeholder="說明當時的學習情境：哪個科目、哪個概念、面臨什麼挑戰？例：高三備考期間，生物細胞分裂單元一直記不住..."></textarea>
+            </div>
+        </div>
+        <div class="star-row">
+            <div class="star-letter">T</div>
+            <div class="star-content">
+                <label>Task 任務 — 你要解決什麼問題？</label>
+                <textarea class="star-input" placeholder="你的具體學習目標是什麼？例：我需要在三天內徹底搞懂減數分裂，不能只靠死背..."></textarea>
+            </div>
+        </div>
+        <div class="star-row">
+            <div class="star-letter">A</div>
+            <div class="star-content">
+                <label>Action 行動 — 你如何使用 AI？</label>
+                <textarea class="star-input" placeholder="具體說明你用了哪個 AI 工具、什麼方法、什麼提示詞。例：我使用 Claude，採用費曼技巧，先向 AI 解釋我的理解，再讓 AI 指出錯誤..."></textarea>
+            </div>
+        </div>
+        <div class="star-row">
+            <div class="star-letter">R</div>
+            <div class="star-content">
+                <label>Result 成果 — 取得了什麼具體成效？</label>
+                <textarea class="star-input" placeholder="請盡量使用具體數字或可驗證的成果。例：月考從 72 分提升到 91 分 / 完成了原本卡關的專題 / 英文口說信心明顯增加..."></textarea>
+            </div>
+        </div>
+        <div class="star-row" style="margin-bottom:0;">
+            <div class="star-letter" style="background:#db2777; font-size:12px;">AI</div>
+            <div class="star-content">
+                <label>AI Insight 洞察 — 你從中有什麼深刻的反思？</label>
+                <textarea class="star-input" placeholder="這次使用 AI 讓你對 AI 的角色有什麼新的認識？你如何看待 AI 在學習中的定位？有沒有發現 AI 的限制？"></textarea>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI 工具評估 -->
+    <div class="section-title">🔍 Section 3：AI 工具使用評估</div>
+    <div class="field-group">
+        <div class="field-label">你使用的 AI 工具及其適用性</div>
+        <textarea class="text-input large" placeholder="評估你使用的 AI 工具：它對這個任務的效果如何？有什麼優點和缺點？你為什麼選擇這個工具而不是其他工具？"></textarea>
+    </div>
+    <div class="field-group">
+        <div class="field-label">你的提示詞設計策略</div>
+        <textarea class="text-input large" placeholder="你是如何設計提示詞的？哪種提示詞最有效？你有沒有不斷優化提示詞？說明你的策略..."></textarea>
+    </div>
+    <div class="field-group">
+        <div class="field-label">AI 輸出的品質驗證</div>
+        <textarea class="text-input" placeholder="你如何確認 AI 的輸出是正確的？有沒有發現 AI 說錯的地方？你怎麼處理這個問題？"></textarea>
+    </div>
+
+    <!-- 學習遷移 -->
+    <div class="section-title">🚀 Section 4：學習遷移與未來應用</div>
+    <div class="field-group">
+        <div class="field-label">這次經驗對你其他科目或生活的影響</div>
+        <textarea class="text-input large" placeholder="這次使用 AI 的經驗有沒有影響你在其他地方的學習或思考方式？例：我開始在其他科目也嘗試費曼技巧..."></textarea>
+    </div>
+    <div class="field-group">
+        <div class="field-label">未來如何應用 AI（連結到你申請的科系）</div>
+        <textarea class="text-input large" placeholder="你打算如何在未來的學習或職涯中應用 AI？特別是如何在你有興趣的科系領域中使用 AI？"></textarea>
+    </div>
+
+    <!-- 一頁總結 -->
+    <div class="section-title">📝 Section 5：一段話精華總結</div>
+    <div class="highlight-box">
+        <h3>💡 面試用精華段落（約 100-150 字）</h3>
+        <p style="font-size:14px; color:#6b21a8; margin-bottom:10px;">這段文字應該完整呈現你的 AI 學習歷程，可直接在面試中使用。包含：情境 → 行動 → 成果 → 洞察。</p>
+        <textarea class="text-input xlarge" placeholder="在這裡寫出你的精華總結，就像你在面試官面前說的那樣...&#10;&#10;「在準備＿＿的時候，我遇到了＿＿的挑戰。我使用＿＿AI工具，透過＿＿方法，成功解決了這個問題，成果是＿＿。這次經驗讓我體認到＿＿，我認為在未來＿＿的學習中，AI 能夠幫助我＿＿。」"></textarea>
+    </div>
+
+    <hr class="divider">
+    <div class="submit-area">
+        <button class="btn-print" onclick="window.print()">🖨️ 列印 / 存成 PDF</button>
+        <button class="btn-clear" onclick="clearForm()">🗑️ 清除重填</button>
+    </div>
+    <div class="footer-note">© 2026 AI 認知學習應用認證課程教材</div>
+</div>
+
+<script>
+    document.getElementById('dateInput').valueAsDate = new Date();
+    function clearForm() {
+        if (confirm('確定要清除所有填寫內容嗎？')) {
+            document.querySelectorAll('input[type="text"], input[type="date"], textarea').forEach(el => el.value = '');
+            document.getElementById('dateInput').valueAsDate = new Date();
+        }
+    }
+</script>
+</body>
+</html>

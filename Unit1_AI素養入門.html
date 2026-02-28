@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unit 1 - AI 素養入門</title>
+    <script src="auth.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Microsoft JhengHei', 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+            min-height: 100vh; overflow: hidden; color: #333;
+        }
+        .nav-bar {
+            position: fixed; top: 0; left: 0; right: 0; height: 60px;
+            background: rgba(255,255,255,0.12); backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0 30px; z-index: 10000; box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .nav-title { font-size: 18px; font-weight: 700; color: #fff; }
+        .nav-buttons { display: flex; gap: 10px; }
+        .nav-btn {
+            background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.4);
+            color: white; padding: 6px 14px; border-radius: 20px; cursor: pointer;
+            font-size: 13px; font-weight: 600; text-decoration: none;
+            transition: all 0.3s; display: flex; align-items: center; gap: 5px;
+        }
+        .nav-btn:hover { background: rgba(255,255,255,0.4); transform: translateY(-2px); }
+        .nav-arrow {
+            position: fixed; top: 50%; transform: translateY(-50%);
+            background: rgba(255,255,255,0.25); color: white;
+            width: 55px; height: 55px; border-radius: 50%;
+            border: 2px solid rgba(255,255,255,0.4); font-size: 22px; cursor: pointer;
+            z-index: 9000; transition: all 0.3s; display: flex; align-items: center; justify-content: center;
+        }
+        .nav-arrow:hover { background: rgba(255,255,255,0.5); transform: translateY(-50%) scale(1.1); }
+        .prev-arrow { left: 25px; }
+        .next-arrow { right: 25px; }
+        .nav-arrow:disabled { opacity: 0.3; cursor: not-allowed; }
+        .slide-container { width: 100%; height: 100vh; padding-top: 60px; position: relative; }
+        .slide {
+            position: absolute; top: 60px; left: 0; width: 100%; height: calc(100vh - 60px);
+            display: none; align-items: center; justify-content: center; padding: 40px;
+            opacity: 0; transition: opacity 0.4s ease; z-index: 10;
+        }
+        .slide.active { display: flex; opacity: 1; z-index: 20; }
+        .content-card {
+            background: rgba(255,255,255,0.97); border-radius: 24px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3); padding: 55px;
+            max-width: 1300px; width: 95%; max-height: 86vh; overflow-y: auto;
+        }
+        h1 { color: #0f2027; font-size: 52px; margin-bottom: 20px; text-align: center; }
+        h2 { color: #203a43; font-size: 36px; margin-bottom: 28px; border-bottom: 3px solid #4facfe; padding-bottom: 12px; }
+        h3 { color: #0f2027; font-size: 24px; margin: 25px 0 12px; }
+        p, li { font-size: 19px; line-height: 1.8; color: #444; margin-bottom: 12px; }
+        ul, ol { padding-left: 28px; }
+        .subtitle { font-size: 22px; color: #666; text-align: center; margin-bottom: 10px; font-weight: 400; }
+        .unit-badge {
+            display: inline-block; background: linear-gradient(90deg, #4facfe, #00f2fe);
+            color: white; padding: 5px 18px; border-radius: 20px;
+            font-size: 13px; font-weight: 700; letter-spacing: 2px; margin-bottom: 15px;
+        }
+        .box { padding: 22px 28px; border-radius: 14px; margin: 22px 0; border-left: 6px solid; font-size: 18px; }
+        .info { background: #e3f2fd; border-color: #2196f3; color: #0d47a1; }
+        .warning { background: #fff3cd; border-color: #ffc107; color: #856404; }
+        .success { background: #d4edda; border-color: #28a745; color: #155724; }
+        .tip { background: #f3e5f5; border-color: #9c27b0; color: #4a148c; }
+        .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; margin-top: 20px; }
+        .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 20px; }
+        .card {
+            background: linear-gradient(135deg, #f5f7fa, #e8edf2);
+            border-radius: 16px; padding: 25px; border: 1px solid #dde3ec;
+            transition: transform 0.3s;
+        }
+        .card:hover { transform: translateY(-5px); border-color: #4facfe; }
+        .card h3 { margin-top: 0; font-size: 20px; }
+        .highlight {
+            background: linear-gradient(120deg, #89f7fe 0%, #66a6ff 100%);
+            padding: 3px 8px; border-radius: 6px; font-weight: 700; color: #fff;
+        }
+        .tool-table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 17px; }
+        .tool-table th { background: #0f2027; color: white; padding: 14px 16px; text-align: left; }
+        .tool-table td { padding: 12px 16px; border-bottom: 1px solid #eee; }
+        .tool-table tr:nth-child(even) { background: #f5f7fa; }
+        .think-box {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 16px; padding: 28px; color: white; margin: 22px 0;
+        }
+        .think-box h3 { color: white; margin-top: 0; }
+        .indicators {
+            position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%);
+            display: flex; gap: 10px; z-index: 4000;
+            padding: 8px 22px; background: rgba(0,0,0,0.3); border-radius: 30px;
+        }
+        .dot { width: 10px; height: 10px; background: rgba(255,255,255,0.4); border-radius: 50%; cursor: pointer; }
+        .dot.active { background: #4facfe; transform: scale(1.3); }
+
+        /* 互動元素 */
+        .interactive-scenario {
+            background: #f8fafc; border-radius: 14px; padding: 22px; margin-bottom: 18px;
+            border: 2px solid #e0e0e0; transition: border-color 0.3s;
+        }
+        .interactive-scenario:hover { border-color: #4facfe; }
+        .interactive-scenario h3 { font-size: 20px; color: #0f2027; margin-bottom: 10px; }
+        .interactive-scenario p { font-size: 17px; color: #555; margin-bottom: 14px; }
+        .think-textarea {
+            width: 100%; border: 2px solid #e0e0e0; border-radius: 10px;
+            padding: 10px 14px; font-size: 15px; font-family: inherit;
+            resize: vertical; min-height: 70px; outline: none; transition: border-color 0.3s;
+            color: #333;
+        }
+        .think-textarea:focus { border-color: #4facfe; }
+        .reveal-btn {
+            margin-top: 10px; background: linear-gradient(90deg, #667eea, #4facfe);
+            color: white; border: none; padding: 9px 22px; border-radius: 20px;
+            font-size: 14px; font-weight: 700; cursor: pointer; transition: all 0.3s;
+        }
+        .reveal-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(79,172,254,0.4); }
+        .answer-reveal {
+            margin-top: 12px; background: linear-gradient(135deg, #e8f4f8, #d0eaff);
+            border-radius: 10px; padding: 16px 18px; font-size: 15px;
+            color: #1a3a5c; line-height: 1.7; border-left: 4px solid #4facfe;
+            display: none;
+        }
+
+        /* 各 part 尾部導航 */
+        .next-part-banner {
+            background: linear-gradient(135deg, #0f2027, #2c5364);
+            border-radius: 20px; padding: 35px; text-align: center; margin-top: 28px;
+            border: 2px solid rgba(79,172,254,0.4);
+        }
+        .next-part-banner p { color: rgba(255,255,255,0.75); font-size: 15px; margin-bottom: 16px; }
+        .next-part-btn {
+            display: inline-block; background: linear-gradient(90deg, #4facfe, #00f2fe);
+            color: #0f2027; padding: 15px 50px; border-radius: 40px;
+            font-size: 20px; font-weight: 800; text-decoration: none;
+            transition: all 0.3s; box-shadow: 0 8px 25px rgba(79,172,254,0.4);
+        }
+        .next-part-btn:hover { transform: translateY(-4px); box-shadow: 0 12px 35px rgba(79,172,254,0.5); }
+    </style>
+</head>
+<body>
+<script>requireAuth();</script>
+
+<div class="nav-bar">
+    <div class="nav-title">🧠 Unit 1 — AI 素養入門</div>
+    <div class="nav-buttons">
+        <a href="index.html" class="nav-btn">🏠 首頁</a>
+        <button class="nav-btn" onclick="goToSlide(0)">⏮ 開始</button>
+        <button class="nav-btn" onclick="toggleFullscreen()">🖥️ 全螢幕</button>
+        <a href="https://www.youtube.com/@Liang-yt02" target="_blank" class="nav-btn">🎥 YT</a>
+    </div>
+</div>
+
+<div class="slide-container">
+
+    <!-- Slide 1: 封面 -->
+    <div class="slide active">
+        <div class="content-card" style="text-align:center; display:flex; flex-direction:column; justify-content:center; align-items:center;">
+            <div class="unit-badge">AI 認知學習應用認證 ｜ 第一章</div>
+            <h1 style="font-size:58px;">🧠 Unit 1</h1>
+            <h2 style="border:none; font-size:34px; color:#203a43;">AI 素養入門</h2>
+            <p class="subtitle">我不只會 ChatGPT！</p>
+            <p style="max-width:650px; font-size:18px; color:#666; margin-top:20px; line-height:1.8;">
+                認識 AI 工具的全貌、了解 AI 能力的邊界<br>建立正確使用 AI 的觀念與態度
+            </p>
+            <div style="display:flex; gap:15px; margin-top:30px; flex-wrap:wrap; justify-content:center;">
+                <span class="highlight">120 分鐘</span>
+                <span class="highlight">AI 生態系</span>
+                <span class="highlight">能力邊界</span>
+                <span class="highlight">素養思維</span>
+            </div>
+                    </div>
+    </div>
+
+    <!-- Slide 2: 學習地圖 -->
+    <div class="slide">
+        <div class="content-card">
+            <h2>🗺️ 本單元學習地圖</h2>
+            <p>這個單元結束後，你將能夠：</p>
+            <div class="grid3">
+                <div class="card">
+                    <h3>1️⃣ 認識全貌</h3>
+                    <p>了解 AI 工具生態系，不只知道 ChatGPT</p>
+                </div>
+                <div class="card">
+                    <h3>2️⃣ 能力邊界</h3>
+                    <p>清楚知道 AI 擅長什麼、不擅長什麼</p>
+                </div>
+                <div class="card">
+                    <h3>3️⃣ 素養思維</h3>
+                    <p>建立正確使用 AI 的思維與態度</p>
+                </div>
+                <div class="card">
+                    <h3>4️⃣ 選對工具</h3>
+                    <p>針對不同需求，選擇最適合的 AI 工具</p>
+                </div>
+                <div class="card">
+                    <h3>5️⃣ 說出道理</h3>
+                    <p>能清楚向他人解釋「AI 是什麼、怎麼用」</p>
+                </div>
+                <div class="card">
+                    <h3>6️⃣ 面試亮點</h3>
+                    <p>掌握讓面試官眼睛一亮的 AI 素養關鍵字</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 3: 暖身提問 -->
+    <div class="slide">
+        <div class="content-card">
+            <h2>🤔 暖身思考</h2>
+            <div class="think-box">
+                <h3>想一想：你現在用 AI 做什麼？</h3>
+                <p style="color:rgba(255,255,255,0.9);">請在心裡列舉你最近 2 週使用 AI 工具的情況...</p>
+            </div>
+            <div class="grid2" style="margin-top:20px;">
+                <div>
+                    <h3>多數同學的現況</h3>
+                    <ul>
+                        <li>用 ChatGPT 查資料</li>
+                        <li>叫 AI 幫忙寫作業</li>
+                        <li>問 AI 考題答案</li>
+                        <li>聊天、打發時間</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3>這堂課之後</h3>
+                    <ul>
+                        <li>理解 AI 的原理與限制</li>
+                        <li>用 AI 強化真實學習</li>
+                        <li>建立個人 AI 學習策略</li>
+                        <li>能在面試中侃侃而談</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="box warning" style="margin-top:20px;">
+                <strong>關鍵差距：</strong>「用過 AI」和「會用 AI 學習」之間，差的是<strong>素養</strong>和<strong>策略</strong>。
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 4: 什麼是 AI 素養 -->
+    <div class="slide">
+        <div class="content-card">
+            <h2>📖 什麼是「AI 素養」？</h2>
+            <div class="box info">
+                <strong>AI 素養（AI Literacy）</strong> 是指理解 AI 的基本原理、能夠有效使用 AI 工具、並能批判性地評估 AI 輸出結果的能力。
+            </div>
+            <div class="grid3" style="margin-top:25px;">
+                <div class="card" style="border-left: 4px solid #4facfe;">
+                    <h3>🔍 理解力</h3>
+                    <p>知道 AI 如何運作、有什麼限制</p>
+                </div>
+                <div class="card" style="border-left: 4px solid #f7971e;">
+                    <h3>🛠️ 應用力</h3>
+                    <p>能選對工具、用對方法完成任務</p>
+                </div>
+                <div class="card" style="border-left: 4px solid #28a745;">
+                    <h3>🧐 批判力</h3>
+                    <p>能辨別 AI 輸出的品質好壞</p>
+                </div>
+                <div class="card" style="border-left: 4px solid #9c27b0;">
+                    <h3>🤝 協作力</h3>
+                    <p>善用 AI 放大人類的優勢</p>
+                </div>
+                <div class="card" style="border-left: 4px solid #e91e63;">
+                    <h3>⚖️ 倫理觀</h3>
+                    <p>了解 AI 的倫理議題與使用責任</p>
+                </div>
+                <div class="card" style="border-left: 4px solid #00bcd4;">
+                    <h3>📣 表達力</h3>
+                    <p>能清楚說明自己如何使用 AI</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 5: AI 工具生態系 -->
+    <div class="slide">
+        <div class="content-card">
+            <h2>🌐 AI 工具生態系全覽</h2>
+            <p>AI 工具遠不止 ChatGPT，依照功能分類如下：</p>
+            <table class="tool-table">
+                <tr>
+                    <th>類別</th>
+                    <th>代表工具</th>
+                    <th>主要用途</th>
+                    <th>學習應用</th>
+                </tr>
+                <tr>
+                    <td>💬 對話型 AI</td>
+                    <td>ChatGPT、Claude、Gemini</td>
+                    <td>問答、寫作、分析</td>
+                    <td>概念解釋、作文優化</td>
+                </tr>
+                <tr>
+                    <td>🔍 AI 搜尋</td>
+                    <td>Perplexity、NotebookLM</td>
+                    <td>資料查詢、摘要整理</td>
+                    <td>資料蒐集、文獻整理</td>
+                </tr>
+                <tr>
+                    <td>🖼️ 圖像生成</td>
+                    <td>Midjourney、Canva AI</td>
+                    <td>設計、視覺創作</td>
+                    <td>簡報配圖、專題封面</td>
+                </tr>
+                <tr>
+                    <td>💻 程式輔助</td>
+                    <td>GitHub Copilot、Cursor</td>
+                    <td>程式碼撰寫與除錯</td>
+                    <td>資訊課作業、自學程式</td>
+                </tr>
+                <tr>
+                    <td>🎤 語音/影片</td>
+                    <td>ElevenLabs、Sora</td>
+                    <td>語音合成、影片生成</td>
+                    <td>口語練習、英文聽力</td>
+                </tr>
+                <tr>
+                    <td>📊 資料分析</td>
+                    <td>ChatGPT Data Analysis</td>
+                    <td>數據解讀、圖表生成</td>
+                    <td>數學輔助、統計作業</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <!-- Slide 6: 大型語言模型比較 -->
+    <div class="slide">
+        <div class="content-card">
+            <h2>🤖 主流對話 AI 比較</h2>
+            <table class="tool-table">
+                <tr>
+                    <th>AI 工具</th>
+                    <th>開發公司</th>
+                    <th>強項</th>
+                    <th>免費使用</th>
+                </tr>
+                <tr>
+                    <td><strong>ChatGPT</strong></td>
+                    <td>OpenAI（美國）</td>
+                    <td>全能型、外掛豐富、圖像生成</td>
+                    <td>基本免費（GPT-4o）</td>
+                </tr>
+                <tr>
+                    <td><strong>Claude</strong></td>
+                    <td>Anthropic（美國）</td>
+                    <td>長文處理、邏輯分析、安全性高</td>
+                    <td>基本免費</td>
+                </tr>
+                <tr>
+                    <td><strong>Gemini</strong></td>
+                    <td>Google（美國）</td>
+                    <td>與 Google 服務整合、即時資訊</td>
+                    <td>基本免費（Google 帳號）</td>
+                </tr>
+                <tr>
+                    <td><strong>Copilot</strong></td>
+                    <td>Microsoft（美國）</td>
+                    <td>Office 整合、網路搜尋</td>
+                    <td>學校授權免費</td>
+                </tr>
+                <tr>
+                    <td><strong>NotebookLM</strong></td>
+                    <td>Google（美國）</td>
+                    <td>文件分析、筆記整理、Podcast</td>
+                    <td>完全免費</td>
+                </tr>
+            </table>
+            <div class="box tip" style="margin-top:20px;">
+                <strong>面試技巧：</strong>面試時說出具體工具名稱，比只說「我用 ChatGPT」更有說服力！
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 7: AI 能力邊界 -->
+    <div class="slide">
+        <div class="content-card">
+            <h2>⚖️ AI 的能力邊界</h2>
+            <p>了解 AI 的限制，才能真正善用 AI。</p>
+            <div class="grid2">
+                <div>
+                    <div class="box success">
+                        <h3 style="color:#155724; margin-top:0;">✅ AI 擅長的事</h3>
+                        <ul style="color:#155724;">
+                            <li>快速整理、歸納資訊</li>
+                            <li>產出初稿、提供範例</li>
+                            <li>解釋複雜概念</li>
+                            <li>翻譯、改寫文字</li>
+                            <li>24 小時耐心回答問題</li>
+                            <li>多角度分析問題</li>
+                        </ul>
+                    </div>
+                </div>
+                <div>
+                    <div class="box warning">
+                        <h3 style="color:#856404; margin-top:0;">⚠️ AI 的限制</h3>
+                        <ul style="color:#856404;">
+                            <li>可能「自信地說錯話」（幻覺問題）</li>
+                            <li>知識有截止日期（訓練資料）</li>
+                            <li>無法取代真實體驗與情感</li>
+                            <li>不了解你的個人脈絡</li>
+                            <li>創意受限於已有資料</li>
+                            <li>需要人類的判斷與把關</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="box info" style="margin-top:15px;">
+                <strong>核心觀念：</strong>AI 是強大的<strong>輔助工具</strong>，不是答案機器。你的判斷力才是最重要的。
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 8: AI 幻覺說明 -->
+    <div class="slide">
+        <div class="content-card">
+            <h2>🌀 什麼是「AI 幻覺」？</h2>
+            <div class="box warning">
+                <strong>AI 幻覺（Hallucination）</strong>：AI 在不確定時，可能「編造」聽起來合理但實際上錯誤的答案，而且說得非常有把握。
+            </div>
+            <div class="grid2" style="margin-top:20px;">
+                <div class="card">
+                    <h3>🔴 常見例子</h3>
+                    <ul>
+                        <li>引用不存在的論文</li>
+                        <li>捏造歷史事件細節</li>
+                        <li>計算題答錯但很自信</li>
+                        <li>說某件事是最新，但其實過時</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>🟢 如何應對</h3>
+                    <ul>
+                        <li>重要資訊一定要查證</li>
+                        <li>要求 AI 提供來源</li>
+                        <li>與其他資料交叉比對</li>
+                        <li>培養自己的批判思考</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="think-box" style="margin-top:20px;">
+                <h3>面試金句準備</h3>
+                <p style="color:rgba(255,255,255,0.9); font-size:18px;">「我使用 AI 時，會特別注意驗證資訊的正確性，因為 AI 可能產生幻覺。我會把 AI 當作起點，而不是終點。」</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 9: 負責任地使用 AI -->
+    <div class="slide">
+        <div class="content-card">
+            <h2>⚖️ 負責任地使用 AI</h2>
+            <div class="grid3">
+                <div class="card" style="border-top: 4px solid #4facfe;">
+                    <h3>📚 學術誠信</h3>
+                    <p>使用 AI 輔助學習 ≠ 讓 AI 代替你思考。了解學校和各科目對 AI 使用的規定。</p>
+                </div>
+                <div class="card" style="border-top: 4px solid #f7971e;">
+                    <h3>🔒 隱私保護</h3>
+                    <p>不要輸入個人資訊（身分證、電話）或他人隱私到 AI 工具。</p>
+                </div>
+                <div class="card" style="border-top: 4px solid #28a745;">
+                    <h3>🌍 資訊責任</h3>
+                    <p>不散布 AI 生成的未經查證資訊。對 AI 輸出負起查核的責任。</p>
+                </div>
+                <div class="card" style="border-top: 4px solid #9c27b0;">
+                    <h3>🎨 版權意識</h3>
+                    <p>AI 生成的圖片、文字的版權問題仍在討論中，使用時需注意標示。</p>
+                </div>
+                <div class="card" style="border-top: 4px solid #e91e63;">
+                    <h3>🧠 保持思考</h3>
+                    <p>不要完全依賴 AI，保持自己主動思考和解決問題的能力。</p>
+                </div>
+                <div class="card" style="border-top: 4px solid #00bcd4;">
+                    <h3>💬 透明溝通</h3>
+                    <p>在適當情況下說明哪些部分使用了 AI 輔助，保持透明誠信。</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 10: 隨堂互動思考練習 -->
+    <div class="slide">
+        <div class="content-card">
+            <h2>💡 隨堂互動思考練習</h2>
+            <p style="color:#666; margin-bottom:18px;">請先寫下自己的想法，再點選「查看參考思路」</p>
+
+            <div class="interactive-scenario">
+                <h3>情境 1 🤔</h3>
+                <p>你問 AI「2024 年台灣大選結果是誰」，AI 給了一個答案，但你不確定是否正確。你接下來應該...？</p>
+                <textarea class="think-textarea" placeholder="請寫下你的想法..."></textarea>
+                <button class="reveal-btn" onclick="toggleAnswer(this)">💡 查看參考思路</button>
+                <div class="answer-reveal">
+                    ✅ 應查閱官方選舉委員會或可信新聞媒體（如中央社、公視）加以驗證。AI 對<strong>特定時事</strong>有訓練資料截止日問題，也容易產生幻覺，重要事實不能直接採信。
+                </div>
+            </div>
+
+            <div class="interactive-scenario">
+                <h3>情境 2 🤔</h3>
+                <p>老師要求你寫一篇「我對未來的看法」作文，你直接把 AI 寫的交上去。這樣做有什麼問題？</p>
+                <textarea class="think-textarea" placeholder="請寫下你的想法..."></textarea>
+                <button class="reveal-btn" onclick="toggleAnswer(this)">💡 查看參考思路</button>
+                <div class="answer-reveal">
+                    ✅ 三個層面的問題：<br>
+                    ① <strong>學術誠信</strong>：作文是評估「你的思考」，AI 寫的不代表你。<br>
+                    ② <strong>學習損失</strong>：你失去了練習表達和組織想法的機會。<br>
+                    ③ <strong>說謊風險</strong>：如果面試時被追問，你無法說清楚這篇文章的想法。<br>
+                    ✅ 正確做法：用 AI 幫你腦力激盪和修改，但核心想法必須是你自己的。
+                </div>
+            </div>
+
+            <div class="interactive-scenario" style="margin-bottom:0;">
+                <h3>情境 3 🤔</h3>
+                <p>面試時教授問你：「你覺得 AI 會不會取代人類的工作？」你會怎麼回答才有深度？</p>
+                <textarea class="think-textarea" placeholder="請寫下你的想法..."></textarea>
+                <button class="reveal-btn" onclick="toggleAnswer(this)">💡 查看參考思路</button>
+                <div class="answer-reveal">
+                    ✅ 有深度的回答包含三層：<br>
+                    ① <strong>承認變化</strong>：AI 確實會改變許多工作的型態，重複性、規則性高的工作受影響最大。<br>
+                    ② <strong>說明優勢</strong>：創意、情感連結、倫理判斷、跨領域整合等，是人類目前的優勢。<br>
+                    ③ <strong>個人策略</strong>：「我選擇學習如何與 AI 協作，讓 AI 成為我的工具，而不是競爭者。」
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 11: Unit 1 總結 -->
+    <div class="slide">
+        <div class="content-card">
+            <h2>🎉 Unit 1 總結</h2>
+            <div class="box success">
+                <h3 style="color:#155724; margin-top:0;">本單元你學到了...</h3>
+                <ul style="color:#155724; font-size:18px;">
+                    <li>AI 素養包含：理解力、應用力、批判力、協作力、倫理觀、表達力</li>
+                    <li>AI 工具生態系豐富多元，不只有 ChatGPT</li>
+                    <li>主流對話 AI：ChatGPT、Claude、Gemini、Copilot、NotebookLM</li>
+                    <li>AI 有幻覺問題，重要資訊必須查證</li>
+                    <li>使用 AI 要負責任：誠信、隱私、版權</li>
+                </ul>
+            </div>
+            <div class="think-box" style="margin-top:25px;">
+                <h3>面試加分句型</h3>
+                <p style="color:rgba(255,255,255,0.9); font-size:18px; line-height:1.8;">
+                    「我使用過多種 AI 工具，包括 ___ 和 ___，主要用於 ___。我了解 AI 的能力邊界，會透過 ___ 來驗證 AI 提供的資訊。」
+                </p>
+            </div>
+            <div class="next-part-banner">
+                <p>完成本章後，繼續前往下一章</p>
+                <a href="Unit2_AI學習應用.html" class="next-part-btn">
+                    前往 Unit 2：AI × 學習 = 超能力 →
+                </a>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<button class="nav-arrow prev-arrow" id="prevBtn" onclick="changeSlide(-1)">❮</button>
+<button class="nav-arrow next-arrow" id="nextBtn" onclick="changeSlide(1)">❯</button>
+<div class="indicators" id="indicatorContainer"></div>
+
+<script>
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.slide');
+    const totalSlides = slides.length;
+
+    function init() {
+        createIndicators();
+        showSlide(0);
+        document.addEventListener('keydown', e => {
+            if (e.key === 'ArrowLeft') changeSlide(-1);
+            if (e.key === 'ArrowRight') changeSlide(1);
+        });
+    }
+
+    function createIndicators() {
+        const c = document.getElementById('indicatorContainer');
+        slides.forEach((_, i) => {
+            const d = document.createElement('div');
+            d.className = 'dot';
+            d.onclick = () => goToSlide(i);
+            c.appendChild(d);
+        });
+    }
+
+    function showSlide(index) {
+        if (index < 0) index = 0;
+        if (index >= totalSlides) index = totalSlides - 1;
+        slides.forEach(s => s.classList.remove('active'));
+        slides[index].classList.add('active');
+        currentSlide = index;
+        document.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('active', i === index));
+        document.getElementById('prevBtn').disabled = index === 0;
+        document.getElementById('nextBtn').disabled = index === totalSlides - 1;
+    }
+
+    function changeSlide(dir) { showSlide(currentSlide + dir); }
+    function goToSlide(i) { showSlide(i); }
+
+    function toggleFullscreen() {
+        if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+        else document.exitFullscreen();
+    }
+
+    function toggleAnswer(btn) {
+        const reveal = btn.nextElementSibling;
+        const isVisible = reveal.style.display === 'block';
+        reveal.style.display = isVisible ? 'none' : 'block';
+        btn.textContent = isVisible ? '💡 查看參考思路' : '🔼 收起參考思路';
+    }
+
+    init();
+</script>
+</body>
+</html>

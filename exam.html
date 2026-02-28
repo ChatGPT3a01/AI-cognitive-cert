@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 認知學習應用認證 — 認證考試</title>
+    <script src="auth.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Microsoft JhengHei', 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+            min-height: 100vh; color: #333; padding: 30px 20px;
+        }
+        .container { max-width: 860px; margin: 0 auto; }
+
+        /* === 開始畫面 === */
+        #startScreen {
+            background: rgba(255,255,255,0.97); border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4); padding: 55px;
+            text-align: center;
+        }
+        .cert-badge {
+            display: inline-block; background: linear-gradient(90deg, #f7971e, #ffd200);
+            color: #1a1a1a; padding: 6px 22px; border-radius: 30px;
+            font-size: 13px; font-weight: 800; letter-spacing: 2px; margin-bottom: 20px;
+        }
+        #startScreen h1 { font-size: 32px; color: #0f2027; margin-bottom: 8px; }
+        #startScreen .en-title { font-size: 16px; color: #888; margin-bottom: 6px; }
+        #startScreen .school { font-size: 14px; color: #aaa; margin-bottom: 30px; }
+
+        .exam-info-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
+            margin: 25px 0; text-align: center;
+        }
+        .exam-info-card {
+            background: linear-gradient(135deg, #0f2027, #2c5364);
+            border-radius: 16px; padding: 22px; color: white;
+        }
+        .exam-info-card .num { font-size: 42px; font-weight: 800; color: #ffd200; }
+        .exam-info-card .label { font-size: 13px; opacity: 0.8; margin-top: 5px; }
+
+        .rules { background: #f8fafc; border-radius: 12px; padding: 22px; margin: 20px 0; text-align: left; }
+        .rules h3 { color: #0f2027; margin-bottom: 12px; font-size: 16px; }
+        .rules li { font-size: 15px; color: #555; line-height: 2; }
+
+        .name-input-area { margin: 25px 0; }
+        .name-input-area label { display: block; font-size: 15px; font-weight: 700; color: #444; margin-bottom: 8px; }
+        .name-input {
+            width: 100%; max-width: 360px; border: 2px solid #ddd; border-radius: 12px;
+            padding: 12px 18px; font-size: 18px; font-family: inherit; outline: none;
+            transition: border-color 0.3s; text-align: center;
+        }
+        .name-input:focus { border-color: #2c5364; }
+
+        .start-btn {
+            background: linear-gradient(135deg, #0f2027, #2c5364);
+            color: white; border: none; padding: 18px 60px; border-radius: 40px;
+            font-size: 20px; font-weight: 700; cursor: pointer; margin-top: 10px;
+            transition: all 0.3s; box-shadow: 0 8px 25px rgba(15,32,39,0.4);
+        }
+        .start-btn:hover { transform: translateY(-4px); box-shadow: 0 12px 35px rgba(15,32,39,0.5); }
+
+        /* === 考試畫面 === */
+        #examScreen { display: none; }
+
+        .exam-header {
+            background: rgba(255,255,255,0.12); border-radius: 16px;
+            padding: 18px 25px; margin-bottom: 25px; color: white;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .exam-header .title { font-size: 16px; font-weight: 700; }
+        .exam-header .meta { font-size: 14px; opacity: 0.8; }
+        .progress-bar-outer { background: rgba(255,255,255,0.2); border-radius: 10px; height: 8px; margin: 10px 0 5px; }
+        .progress-bar-inner { background: linear-gradient(90deg, #f7971e, #ffd200); height: 100%; border-radius: 10px; transition: width 0.4s; }
+        .timer { font-size: 22px; font-weight: 800; color: #ffd200; }
+        .timer.warning { color: #ff6b6b; animation: blink 1s infinite; }
+        @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+        .question-card {
+            background: rgba(255,255,255,0.97); border-radius: 20px;
+            padding: 40px; box-shadow: 0 15px 40px rgba(0,0,0,0.25); margin-bottom: 20px;
+        }
+        .question-num { font-size: 13px; color: #888; font-weight: 700; letter-spacing: 1px; margin-bottom: 10px; }
+        .question-text { font-size: 20px; font-weight: 600; color: #0f2027; line-height: 1.7; margin-bottom: 25px; }
+        .options { display: flex; flex-direction: column; gap: 12px; }
+        .option-btn {
+            background: #f5f7fa; border: 2px solid #e0e0e0; border-radius: 12px;
+            padding: 16px 22px; font-size: 17px; cursor: pointer; text-align: left;
+            transition: all 0.2s; font-family: inherit; color: #333; line-height: 1.5;
+        }
+        .option-btn:hover { background: #e8f4f8; border-color: #2c5364; transform: translateX(4px); }
+        .option-btn.selected { background: #e8f4f8; border-color: #2c5364; color: #0f2027; font-weight: 600; }
+        .option-btn.correct { background: #d4edda; border-color: #28a745; color: #155724; font-weight: 700; pointer-events: none; }
+        .option-btn.wrong { background: #f8d7da; border-color: #dc3545; color: #721c24; font-weight: 700; pointer-events: none; }
+        .option-btn.show-correct { background: #d4edda; border-color: #28a745; color: #155724; pointer-events: none; }
+
+        .nav-btns { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; }
+        .nav-btn {
+            background: rgba(255,255,255,0.15); border: 2px solid rgba(255,255,255,0.3);
+            color: white; padding: 12px 30px; border-radius: 30px;
+            font-size: 15px; font-weight: 700; cursor: pointer; transition: all 0.3s;
+        }
+        .nav-btn:hover { background: rgba(255,255,255,0.3); }
+        .nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+        .submit-btn {
+            background: linear-gradient(135deg, #f7971e, #ffd200); color: #1a1a1a;
+            border: none; padding: 12px 30px; border-radius: 30px;
+            font-size: 15px; font-weight: 800; cursor: pointer; transition: all 0.3s;
+        }
+        .submit-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(247,151,30,0.4); }
+
+        .question-dots {
+            display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px;
+        }
+        .q-dot {
+            width: 32px; height: 32px; border-radius: 50%; background: rgba(255,255,255,0.2);
+            border: 2px solid rgba(255,255,255,0.3); color: white; font-size: 12px;
+            font-weight: 700; display: flex; align-items: center; justify-content: center;
+            cursor: pointer; transition: all 0.2s;
+        }
+        .q-dot.answered { background: #2c5364; border-color: #4facfe; }
+        .q-dot.current { background: #f7971e; border-color: #ffd200; color: #1a1a1a; }
+
+        /* === 結果畫面 === */
+        #resultScreen {
+            background: rgba(255,255,255,0.97); border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4); padding: 55px;
+            text-align: center; display: none;
+        }
+        .result-icon { font-size: 80px; margin-bottom: 20px; }
+        #resultScreen h2 { font-size: 36px; margin-bottom: 10px; }
+        .score-display { font-size: 72px; font-weight: 900; margin: 20px 0; }
+        .score-display.pass { color: #28a745; }
+        .score-display.fail { color: #dc3545; }
+        .score-sub { font-size: 18px; color: #666; margin-bottom: 30px; }
+        .result-details {
+            display: grid; grid-template-columns: repeat(3,1fr); gap: 18px; margin: 25px 0;
+        }
+        .result-card {
+            background: #f5f7fa; border-radius: 14px; padding: 20px;
+        }
+        .result-card .num { font-size: 32px; font-weight: 800; color: #2c5364; }
+        .result-card .label { font-size: 14px; color: #888; margin-top: 4px; }
+        .pass-banner {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            border-radius: 16px; padding: 25px; color: white; margin: 20px 0;
+        }
+        .pass-banner h3 { font-size: 24px; margin-bottom: 8px; }
+        /* 認證證書樣式 */
+        .cert-design {
+            background: linear-gradient(160deg, #fffef0, #fff8e1);
+            border: 3px solid #c9a84c;
+            border-radius: 16px;
+            padding: 40px 36px 32px;
+            margin: 20px 0;
+            text-align: center;
+            box-shadow: 0 0 0 8px rgba(201,168,76,0.15), 0 12px 40px rgba(0,0,0,0.12);
+            position: relative;
+            font-family: "Noto Serif TC", "Georgia", serif;
+        }
+        .cert-design::before {
+            content: "❧";
+            position: absolute; top: 12px; left: 20px;
+            font-size: 22px; color: #c9a84c; opacity: 0.6;
+        }
+        .cert-design::after {
+            content: "❧";
+            position: absolute; top: 12px; right: 20px;
+            font-size: 22px; color: #c9a84c; opacity: 0.6;
+        }
+        .cert-top-label {
+            font-size: 13px; letter-spacing: 4px; color: #8a6f00;
+            text-transform: uppercase; margin-bottom: 10px;
+        }
+        .cert-title {
+            font-size: 28px; font-weight: 900; color: #2c2c00;
+            letter-spacing: 2px; margin-bottom: 4px;
+        }
+        .cert-title-en {
+            font-size: 13px; color: #8a6f00; letter-spacing: 1px; margin-bottom: 22px;
+        }
+        .cert-divider {
+            border: none; border-top: 1.5px solid #c9a84c;
+            margin: 0 auto 22px; width: 60%;
+        }
+        .cert-body {
+            font-size: 16px; color: #444; line-height: 2.2; margin-bottom: 8px;
+        }
+        .cert-name-highlight {
+            font-size: 26px; font-weight: 900; color: #8a2b00;
+            border-bottom: 2.5px solid #c9a84c;
+            padding: 0 8px; display: inline-block;
+            letter-spacing: 2px; margin: 0 4px;
+        }
+        .cert-cert-name {
+            font-size: 19px; font-weight: 700; color: #1a4d00; letter-spacing: 1px;
+        }
+        .cert-divider2 {
+            border: none; border-top: 1px dashed #c9a84c;
+            margin: 22px auto 20px; width: 80%;
+        }
+        .cert-footer {
+            display: flex; justify-content: space-between;
+            align-items: flex-end; margin-top: 10px;
+        }
+        .cert-sig {
+            text-align: center; flex: 1;
+        }
+        .cert-sig-label {
+            font-size: 12px; color: #888; letter-spacing: 2px; margin-bottom: 4px;
+        }
+        .cert-sig-name {
+            font-size: 18px; font-weight: 800; color: #2c2c00;
+            border-top: 1.5px solid #999; padding-top: 6px; min-width: 100px;
+        }
+        .cert-sig-title {
+            font-size: 12px; color: #666; margin-top: 3px;
+        }
+        .cert-seal {
+            font-size: 52px; flex: 0 0 80px; text-align: center;
+            filter: drop-shadow(0 2px 6px rgba(201,168,76,0.5));
+        }
+        .cert-date {
+            font-size: 13px; color: #888; letter-spacing: 1px; margin-top: 16px;
+        }
+        .fail-banner {
+            background: linear-gradient(135deg, #dc3545, #e83e8c);
+            border-radius: 16px; padding: 25px; color: white; margin: 20px 0;
+        }
+        .fail-banner h3 { font-size: 24px; margin-bottom: 8px; }
+        .result-btn {
+            background: linear-gradient(135deg, #0f2027, #2c5364);
+            color: white; border: none; padding: 14px 40px; border-radius: 30px;
+            font-size: 17px; font-weight: 700; cursor: pointer; margin: 8px;
+            transition: all 0.3s;
+        }
+        .result-btn:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(15,32,39,0.4); }
+        .result-btn.secondary { background: #f0f0f0; color: #555; box-shadow: none; }
+        .result-btn.secondary:hover { box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .review-section { text-align: left; margin-top: 30px; }
+        .review-section h3 { color: #0f2027; font-size: 20px; margin-bottom: 15px; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        .review-item { padding: 15px; border-radius: 12px; margin-bottom: 12px; }
+        .review-item.correct-item { background: #d4edda; border-left: 5px solid #28a745; }
+        .review-item.wrong-item { background: #f8d7da; border-left: 5px solid #dc3545; }
+        .review-q { font-size: 16px; font-weight: 600; color: #333; margin-bottom: 8px; }
+        .review-a { font-size: 14px; }
+        .correct-ans { color: #155724; font-weight: 700; }
+        .wrong-ans { color: #721c24; }
+    </style>
+</head>
+<body>
+<script>requireAuth();</script>
+<div class="container">
+
+    <!-- 開始畫面 -->
+    <div id="startScreen">
+        <div class="cert-badge">🏅 官方認證考試</div>
+        <h1>AI 認知學習應用認證</h1>
+        <div class="en-title">AI Cognitive Learning Application Certification</div>
+
+        <div class="exam-info-grid">
+            <div class="exam-info-card">
+                <div class="num">20</div>
+                <div class="label">道題目</div>
+            </div>
+            <div class="exam-info-card">
+                <div class="num">80</div>
+                <div class="label">分通過門檻</div>
+            </div>
+            <div class="exam-info-card">
+                <div class="num">30</div>
+                <div class="label">分鐘作答時間</div>
+            </div>
+        </div>
+
+        <div class="rules">
+            <h3>📋 考試規則</h3>
+            <ul>
+                <li>📌 考試時間：30 分鐘</li>
+                <li>📌 題型：單選題，每題 5 分，共 20 題，滿分 100 分</li>
+                <li>📌 通過標準：80 分（含）以上</li>
+                <li>📌 題目由題庫中隨機抽取，每次考試題目不同</li>
+                <li>📌 可隨時查看答題狀況，可前後切換題目</li>
+                <li>📌 時間到或提交後，立即顯示成績</li>
+            </ul>
+        </div>
+
+        <div class="name-input-area">
+            <label>請輸入你的姓名</label>
+            <input type="text" class="name-input" id="studentName" placeholder="姓名">
+        </div>
+
+        <button class="start-btn" onclick="startExam()">🚀 開始考試</button>
+    </div>
+
+    <!-- 考試畫面 -->
+    <div id="examScreen">
+        <div class="exam-header">
+            <div>
+                <div class="title">🎓 AI 認知學習應用認證考試</div>
+                <div class="meta" id="examMeta">第 1 / 20 題</div>
+                <div class="progress-bar-outer"><div class="progress-bar-inner" id="progressBar" style="width:5%"></div></div>
+            </div>
+            <div>
+                <div class="timer" id="timerDisplay">30:00</div>
+                <div style="font-size:12px; color:rgba(255,255,255,0.6); text-align:right;">剩餘時間</div>
+            </div>
+        </div>
+
+        <div class="question-dots" id="questionDots"></div>
+
+        <div class="question-card">
+            <div class="question-num" id="questionNum">第 1 題</div>
+            <div class="question-text" id="questionText"></div>
+            <div class="options" id="optionsContainer"></div>
+        </div>
+
+        <div class="nav-btns">
+            <button class="nav-btn" id="prevBtn" onclick="prevQuestion()">← 上一題</button>
+            <button class="nav-btn" id="nextBtn" onclick="nextQuestion()">下一題 →</button>
+            <button class="submit-btn" onclick="confirmSubmit()">📋 提交答案</button>
+        </div>
+    </div>
+
+    <!-- 結果畫面 -->
+    <div id="resultScreen">
+        <div class="result-icon" id="resultIcon">🎉</div>
+        <h2 id="resultTitle"></h2>
+        <div class="score-display" id="scoreDisplay"></div>
+        <div class="score-sub" id="scoreSub"></div>
+        <div class="result-details">
+            <div class="result-card"><div class="num" id="correctCount"></div><div class="label">答對題數</div></div>
+            <div class="result-card"><div class="num" id="wrongCount"></div><div class="label">答錯題數</div></div>
+            <div class="result-card"><div class="num" id="timeUsed"></div><div class="label">使用時間</div></div>
+        </div>
+        <div id="resultBanner"></div>
+        <div>
+            <button class="result-btn" onclick="retakeExam()">🔄 重新考試</button>
+            <button class="result-btn secondary" onclick="location.href='index.html'">🏠 回到首頁</button>
+        </div>
+        <div class="review-section">
+            <h3>📝 答題回顧</h3>
+            <div id="reviewContainer"></div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+// ===========================
+// 40 題題庫
+// ===========================
+const QUESTION_BANK = [
+    // === AI 基本概念 ===
+    {
+        q: "下列哪一個選項最能說明「AI 素養」（AI Literacy）的定義？",
+        options: ["只要會使用 ChatGPT 就代表有 AI 素養", "理解 AI 原理、有效使用工具、並能批判性評估 AI 輸出的能力", "能夠撰寫 AI 程式碼的程式設計能力", "完全依賴 AI 完成所有工作的能力"],
+        answer: 1
+    },
+    {
+        q: "「AI 幻覺」（AI Hallucination）是指什麼？",
+        options: ["AI 能夠感知視覺資訊的能力", "AI 在不確定時，編造聽起來合理但實際上錯誤的答案", "AI 的想像力超過人類的現象", "AI 系統發生錯誤導致當機的狀況"],
+        answer: 1
+    },
+    {
+        q: "以下哪個 AI 工具最擅長與 Google 文件、Gmail 等 Google 服務整合？",
+        options: ["ChatGPT", "Claude", "Gemini", "Perplexity"],
+        answer: 2
+    },
+    {
+        q: "NotebookLM 這個 AI 工具的主要特色是什麼？",
+        options: ["專門用來生成圖片", "能根據你上傳的文件進行分析和問答", "提供即時股票資訊", "主要用來寫程式碼"],
+        answer: 1
+    },
+    {
+        q: "使用 AI 工具時，以下哪個行為是正確且負責任的？",
+        options: ["將重要個人資訊（如身分證號碼）直接輸入 AI 對話框", "將 AI 輸出的資訊直接作為事實使用，無需查證", "重要資訊要交叉查證其他可信來源", "AI 說的都是對的，不需要批判思考"],
+        answer: 2
+    },
+    {
+        q: "關於大型語言模型（LLM）的訓練資料，以下哪個敘述正確？",
+        options: ["LLM 可以即時獲取所有最新資訊", "LLM 有訓練資料的截止日期，對此之後的事件可能不了解", "LLM 的訓練資料完全正確，不會有誤", "LLM 每天都會自動更新到最新資料"],
+        answer: 1
+    },
+    {
+        q: "以下哪個選項是 AI 目前「不擅長」的事情？",
+        options: ["快速整理大量資訊", "翻譯和改寫文字", "理解你的個人情感脈絡和生命故事", "24 小時回答問題"],
+        answer: 2
+    },
+    {
+        q: "「Claude」這個 AI 工具是由哪個公司開發的？",
+        options: ["OpenAI", "Google", "Anthropic", "Microsoft"],
+        answer: 2
+    },
+    {
+        q: "使用 AI 生成圖片時，以下哪個說法最正確？",
+        options: ["AI 生成的圖片版權屬於使用者，可以任意商業使用", "AI 生成圖片的版權歸屬仍有爭議，使用前需注意規定", "AI 生成的圖片完全沒有版權問題", "AI 生成的圖片版權屬於 AI 公司"],
+        answer: 1
+    },
+    {
+        q: "以下哪一個行為最能體現「負責任地使用 AI」？",
+        options: ["用 AI 完成所有作業並直接繳交", "用 AI 幫助理解概念，但自己獨立完成作業", "讓 AI 代替自己思考所有問題", "把 AI 輸出直接複製貼上到報告中"],
+        answer: 1
+    },
+
+    // === 提示詞設計 ===
+    {
+        q: "「提示詞」（Prompt）的品質對 AI 輸出有什麼影響？",
+        options: ["提示詞品質完全不影響 AI 的輸出", "提示詞品質直接決定 AI 輸出的品質和準確度", "提示詞越短越好", "只有英文提示詞才有效果"],
+        answer: 1
+    },
+    {
+        q: "以下哪個提示詞的設計最好？",
+        options: ["幫我解釋光合作用", "你是高中生物老師，請用比喻解釋光合作用暗反應，列出 3 個重點，適合高中程度", "光合作用是什麼", "解釋生物"],
+        answer: 1
+    },
+    {
+        q: "提示詞 5 大要素中，「Context」代表什麼？",
+        options: ["指定 AI 的角色", "說明你想要完成的任務", "提供你的背景情境和需求說明", "設定輸出的格式"],
+        answer: 2
+    },
+    {
+        q: "「費曼技巧」應用在 AI 學習中是指什麼？",
+        options: ["請 AI 幫你背誦所有公式", "把概念解釋給 AI 聽，讓 AI 指出你理解不完整的地方", "讓 AI 幫你寫考卷", "請 AI 直接告訴你所有答案"],
+        answer: 1
+    },
+    {
+        q: "「蘇格拉底問法」應用在 AI 學習中最適合用來做什麼？",
+        options: ["讓 AI 快速給出所有答案", "請 AI 用問題引導你思考，讓你自己推導出答案", "讓 AI 幫你寫報告", "用 AI 翻譯文章"],
+        answer: 1
+    },
+    {
+        q: "在提示詞中加入「Role（角色）」的目的是什麼？",
+        options: ["讓 AI 扮演特定角色，以更適合的方式回答你的問題", "讓 AI 知道你的姓名", "讓 AI 說故事", "讓 AI 系統更快速地回應"],
+        answer: 0
+    },
+    {
+        q: "下列哪種 AI 應用最能幫助你練習英文口說？",
+        options: ["請 AI 翻譯你的中文作文", "請 AI 扮演面試官，進行英文問答並給予回饋", "請 AI 幫你背誦單字表", "請 AI 幫你完成英文作業"],
+        answer: 1
+    },
+    {
+        q: "使用 AI 學習時，以下哪個方法最能確保你「真正學懂」而不是死記？",
+        options: ["把 AI 的解釋複製貼上並背下來", "讓 AI 直接告訴你所有答案並記住", "用自己的話解釋給 AI 聽，讓 AI 指出錯誤並補充", "多問幾次 AI 同樣的問題"],
+        answer: 2
+    },
+    {
+        q: "向 AI 請求「連結新舊知識」的提示詞設計，主要目的是什麼？",
+        options: ["讓 AI 幫你找新資料", "幫助你建立知識網絡，理解新概念與已知概念的關係", "讓 AI 幫你寫讀書計畫", "讓 AI 幫你記憶新的單字"],
+        answer: 1
+    },
+    {
+        q: "在提示詞中加入「Format（格式）」限制，例如「請用條列式」，有什麼好處？",
+        options: ["讓 AI 輸出更長的回答", "讓 AI 的回答更符合你的需求，更容易閱讀使用", "讓 AI 說中文", "讓 AI 跑得更快"],
+        answer: 1
+    },
+
+    // === 學習歷程與成果紀錄 ===
+    {
+        q: "一份好的 AI 學習紀錄，最核心的三個要素是什麼？",
+        options: ["工具名稱、使用時間、截圖", "使用情境、學習過程、學習成果", "提示詞、AI 回應、分數", "日期、科目、老師簽名"],
+        answer: 1
+    },
+    {
+        q: "學習歷程的「What、So What、Now What」三層架構中，「So What」代表什麼？",
+        options: ["你做了什麼事", "你從中學到了什麼、有什麼發現和意義", "你接下來打算做什麼", "你用了哪個 AI 工具"],
+        answer: 1
+    },
+    {
+        q: "以下哪種 AI 學習紀錄最有說服力？",
+        options: ["今天用 ChatGPT 查了很多資料，很有用。", "3/15 使用 Claude，透過費曼技巧複習細胞分裂，發現我混淆了 ATP 和 NADPH 的角色，訂正後月考從 72 分升到 91 分。", "AI 幫助了我學習，我很感謝。", "我常常使用 AI 工具。"],
+        answer: 1
+    },
+    {
+        q: "為什麼「可量化的成果」對面試很重要？",
+        options: ["面試官喜歡數字", "具體數字讓你的陳述更可信、更有說服力", "數字讓答案更長", "這是考試的規定"],
+        answer: 1
+    },
+    {
+        q: "建立 AI 學習歷程的好習慣，以下哪個說法最正確？",
+        options: ["只在課程結束時才整理一次紀錄就夠了", "每次使用 AI 學習後立即記錄，並定期整理和撰寫成果報告", "只需要保存 AI 的截圖就夠了", "紀錄學習歷程對升學沒有幫助"],
+        answer: 1
+    },
+
+    // === 面試技巧 ===
+    {
+        q: "STAR-AI 面試框架中，「A（Action）」是指什麼？",
+        options: ["你的學習情境", "你的任務目標", "你具體採取的行動，包括使用哪個 AI 工具和方法", "你取得的成果"],
+        answer: 2
+    },
+    {
+        q: "面試時，以下哪個回答最能展現 AI 素養？",
+        options: ["「我很常用 ChatGPT，很方便。」", "「我用 AI 幫我寫作業，省很多時間。」", "「在準備生物考試時，我用 Claude 的費曼技巧找到自己的盲點，月考從 75 分升到 92 分，讓我體認到 AI 最大的價值在於幫助我發現思考盲點。」", "「AI 很厲害，以後一定很重要。」"],
+        answer: 2
+    },
+    {
+        q: "當面試官問「你覺得 AI 會取代人類工作嗎？」，最好的回答策略是什麼？",
+        options: ["完全否定 AI 的影響力，說 AI 不會取代人", "承認 AI 的影響、說明無法被取代的人類優勢、表達你的因應策略和連結到科系", "完全同意 AI 會取代所有人類工作", "說這個問題太難，你不確定"],
+        answer: 1
+    },
+    {
+        q: "在面試中，誠實說出「使用 AI 時遇到的困難或問題」有什麼好處？",
+        options: ["這樣做會給面試官不好的印象", "展現你的批判思考能力和對 AI 局限性的認識，比說「AI 都很準確」更有說服力", "這沒有任何好處，應該隱瞞問題", "讓回答顯得更長"],
+        answer: 1
+    },
+    {
+        q: "面試腳本的「AI Insight（AI 洞察）」部分，主要目的是什麼？",
+        options: ["展示你的 AI 工具知識", "展現你對 AI 在學習中角色的深度反思和個人觀點", "說明 AI 的技術原理", "介紹 AI 的歷史"],
+        answer: 1
+    },
+    {
+        q: "STAR 面試法中，「S（Situation）」和「T（Task）」的差別是什麼？",
+        options: ["兩者沒有差別，是同一件事", "S 是描述當時的背景情境，T 是說明你面臨的具體任務或挑戰", "S 是成果，T 是行動", "S 是工具，T 是時間"],
+        answer: 1
+    },
+
+    // === AI 倫理與未來 ===
+    {
+        q: "關於 AI 生成內容的學術誠信，以下哪個說法最適當？",
+        options: ["只要用 AI 幫助理解就都是作弊", "了解並遵守學校和各科目對 AI 使用的規定，AI 輔助學習和 AI 代替思考有本質的差異", "使用 AI 完成所有作業是完全沒問題的", "老師不會知道你用了 AI，所以不用擔心"],
+        answer: 1
+    },
+    {
+        q: "以下哪個行為涉及隱私風險？",
+        options: ["請 AI 解釋歷史事件", "將自己或他人的身分證號碼輸入 AI 對話框", "請 AI 幫忙翻譯英文文章", "用 AI 練習數學題"],
+        answer: 1
+    },
+    {
+        q: "如何辨別 AI 產生的「幻覺」答案？",
+        options: ["完全相信 AI 的回答", "將 AI 的回答與其他可信資料來源交叉比對", "問多次相同問題", "只使用英文問 AI"],
+        answer: 1
+    },
+    {
+        q: "「AI 作為學習的輔助工具」和「AI 取代你的學習」，最根本的差異在哪？",
+        options: ["使用的 AI 工具不同", "前者是你主導思考，AI 幫助你更有效率；後者是讓 AI 代替你思考", "使用時間的長短", "提示詞的寫法"],
+        answer: 1
+    },
+    {
+        q: "當 AI 給了你一個聽起來很有說服力的答案，但你感覺不確定時，最好的做法是？",
+        options: ["完全相信 AI，因為 AI 比人類更博學", "先接受，等以後再查", "查閱教科書、官方網站或其他可信來源進行驗證", "換一個 AI 問同樣的問題就好"],
+        answer: 2
+    },
+    {
+        q: "以下哪個選項最能描述「AI 與人類協作」的理想模式？",
+        options: ["人類完全依賴 AI 做所有決策", "AI 完全取代人類的工作", "AI 處理重複性和資訊整理工作，人類專注於創意、判斷和情感層面", "人類和 AI 互相競爭"],
+        answer: 2
+    },
+    {
+        q: "你在用 AI 學習時，發現 AI 解釋的某個概念與教科書不一致，你應該怎麼辦？",
+        options: ["一定是教科書錯了，因為 AI 更新", "一定是 AI 錯了，教科書永遠是對的", "仔細比較兩個說法，查詢其他資料來源，並請教老師確認", "選擇自己比較喜歡的那個版本"],
+        answer: 2
+    },
+    {
+        q: "在學習歷程檔案中放入「AI 學習應用認證」，最能向大學展示什麼？",
+        options: ["你有很多課外活動", "你有系統地學習並應用 AI，具備前瞻的數位學習能力", "你的成績很好", "你有參加比賽"],
+        answer: 1
+    },
+    {
+        q: "以下哪個說法最能體現 AI 時代所需的核心學習能力？",
+        options: ["會使用越多 AI 工具就越有競爭力", "不需要記任何東西，AI 都會幫你記", "保持主動思考、批判評估、持續學習，善用 AI 放大人類優勢", "只要把 AI 的答案記起來就好"],
+        answer: 2
+    },
+    {
+        q: "使用 AI 輔助學習後，最關鍵的最後一步是什麼？",
+        options: ["截圖分享到社群媒體", "反思這次 AI 使用的有效性和學到的東西，記錄下來作為學習歷程", "關閉瀏覽器", "直接開始下一個任務"],
+        answer: 1
+    },
+    {
+        q: "以下哪個是「AI 素養」中「表達力」的最佳體現？",
+        options: ["會寫程式碼", "能清楚向他人說明自己如何使用 AI、取得了什麼成果", "使用最多種類的 AI 工具", "每天使用 AI 超過 4 小時"],
+        answer: 1
+    }
+];
+
+// ===========================
+// 考試邏輯
+// ===========================
+let examQuestions = [];
+let userAnswers = [];
+let currentIndex = 0;
+let timerInterval;
+let secondsLeft = 30 * 60;
+let startTime;
+let studentName = '';
+
+function startExam() {
+    studentName = document.getElementById('studentName').value.trim() || '考生';
+    if (!studentName || studentName === '') {
+        alert('請輸入姓名後再開始考試');
+        return;
+    }
+
+    // 隨機抽 20 題
+    const shuffled = [...QUESTION_BANK].sort(() => Math.random() - 0.5);
+    examQuestions = shuffled.slice(0, 20);
+    userAnswers = new Array(20).fill(-1);
+    currentIndex = 0;
+    secondsLeft = 30 * 60;
+    startTime = Date.now();
+
+    document.getElementById('startScreen').style.display = 'none';
+    document.getElementById('examScreen').style.display = 'block';
+
+    renderDots();
+    renderQuestion(0);
+    startTimer();
+}
+
+function renderDots() {
+    const container = document.getElementById('questionDots');
+    container.innerHTML = '';
+    for (let i = 0; i < 20; i++) {
+        const dot = document.createElement('div');
+        dot.className = 'q-dot' + (i === 0 ? ' current' : '');
+        dot.textContent = i + 1;
+        dot.onclick = () => goToQuestion(i);
+        container.appendChild(dot);
+    }
+}
+
+function updateDots() {
+    const dots = document.querySelectorAll('.q-dot');
+    dots.forEach((dot, i) => {
+        dot.className = 'q-dot';
+        if (userAnswers[i] !== -1) dot.classList.add('answered');
+        if (i === currentIndex) dot.classList.add('current');
+    });
+}
+
+function renderQuestion(index) {
+    const q = examQuestions[index];
+    document.getElementById('questionNum').textContent = `第 ${index + 1} 題 / 共 20 題`;
+    document.getElementById('examMeta').textContent = `第 ${index + 1} / 20 題`;
+    document.getElementById('questionText').textContent = q.q;
+    document.getElementById('progressBar').style.width = ((index + 1) / 20 * 100) + '%';
+
+    const container = document.getElementById('optionsContainer');
+    container.innerHTML = '';
+    const labels = ['A', 'B', 'C', 'D'];
+    q.options.forEach((opt, i) => {
+        const btn = document.createElement('button');
+        btn.className = 'option-btn' + (userAnswers[index] === i ? ' selected' : '');
+        btn.textContent = `${labels[i]}. ${opt}`;
+        btn.onclick = () => selectAnswer(index, i);
+        container.appendChild(btn);
+    });
+
+    document.getElementById('prevBtn').disabled = index === 0;
+    document.getElementById('nextBtn').disabled = index === 19;
+}
+
+function selectAnswer(qIndex, optIndex) {
+    userAnswers[qIndex] = optIndex;
+    updateDots();
+    renderQuestion(qIndex);
+}
+
+function prevQuestion() {
+    if (currentIndex > 0) { currentIndex--; renderQuestion(currentIndex); updateDots(); }
+}
+
+function nextQuestion() {
+    if (currentIndex < 19) { currentIndex++; renderQuestion(currentIndex); updateDots(); }
+}
+
+function goToQuestion(index) {
+    currentIndex = index;
+    renderQuestion(index);
+    updateDots();
+}
+
+function startTimer() {
+    timerInterval = setInterval(() => {
+        secondsLeft--;
+        const m = Math.floor(secondsLeft / 60);
+        const s = secondsLeft % 60;
+        const display = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+        const el = document.getElementById('timerDisplay');
+        el.textContent = display;
+        el.className = 'timer' + (secondsLeft < 300 ? ' warning' : '');
+        if (secondsLeft <= 0) { clearInterval(timerInterval); submitExam(); }
+    }, 1000);
+}
+
+function confirmSubmit() {
+    const unanswered = userAnswers.filter(a => a === -1).length;
+    if (unanswered > 0) {
+        if (!confirm(`還有 ${unanswered} 題尚未作答，確定要提交嗎？`)) return;
+    }
+    clearInterval(timerInterval);
+    submitExam();
+}
+
+function submitExam() {
+    clearInterval(timerInterval);
+    const timeUsed = Math.floor((Date.now() - startTime) / 1000);
+    let correct = 0;
+    examQuestions.forEach((q, i) => { if (userAnswers[i] === q.answer) correct++; });
+    const score = correct * 5;
+    const pass = score >= 80;
+    const m = Math.floor(timeUsed / 60);
+    const s = timeUsed % 60;
+
+    document.getElementById('examScreen').style.display = 'none';
+    const rs = document.getElementById('resultScreen');
+    rs.style.display = 'block';
+
+    document.getElementById('resultIcon').textContent = pass ? '🎉' : '😢';
+    document.getElementById('resultTitle').textContent = pass ? `恭喜你，${studentName}！` : `${studentName}，繼續加油！`;
+    document.getElementById('scoreDisplay').textContent = score + ' 分';
+    document.getElementById('scoreDisplay').className = 'score-display ' + (pass ? 'pass' : 'fail');
+    document.getElementById('scoreSub').textContent = `${correct} / 20 答對（通過門檻：80 分）`;
+    document.getElementById('correctCount').textContent = correct;
+    document.getElementById('wrongCount').textContent = 20 - correct;
+    document.getElementById('timeUsed').textContent = `${m}:${String(s).padStart(2,'0')}`;
+
+    const banner = document.getElementById('resultBanner');
+    if (pass) {
+        const today = new Date();
+        const certDate = `${today.getFullYear()} 年 ${today.getMonth()+1} 月 ${today.getDate()} 日`;
+        banner.innerHTML = `
+        <div class="cert-design">
+            <div class="cert-top-label">Certificate of Achievement</div>
+            <div class="cert-title">AI 認知學習應用認證</div>
+            <div class="cert-title-en">AI Cognitive Learning Application Certification</div>
+            <hr class="cert-divider">
+            <div class="cert-body">
+                茲證明<br>
+                <span class="cert-name-highlight">${studentName}</span><br>
+                已通過本課程認證考核，成績達到通過標準，<br>
+                特頒發
+                <span class="cert-cert-name">「AI 認知學習應用認證」</span>
+                以茲證明。
+            </div>
+            <hr class="cert-divider2">
+            <div class="cert-footer">
+                <div class="cert-sig">
+                    <div class="cert-sig-label">認 證 單 位</div>
+                    <div class="cert-sig-name">臺中市立清水高中教務處</div>
+                </div>
+                <div class="cert-seal">🏅</div>
+                <div class="cert-sig">
+                    <div class="cert-sig-label">認 證 講 師</div>
+                    <div class="cert-sig-name">曾 慶 良</div>
+                </div>
+            </div>
+            <div class="cert-date">頒發日期：${certDate}</div>
+        </div>`;
+    } else {
+        banner.innerHTML = `<div class="fail-banner"><h3>❌ 尚未通過</h3><p>本次成績未達 80 分。請複習課程內容後重新應考。你可以！</p></div>`;
+    }
+
+    // 答題回顧
+    const review = document.getElementById('reviewContainer');
+    review.innerHTML = '';
+    const labels = ['A', 'B', 'C', 'D'];
+    examQuestions.forEach((q, i) => {
+        const isCorrect = userAnswers[i] === q.answer;
+        const div = document.createElement('div');
+        div.className = 'review-item ' + (isCorrect ? 'correct-item' : 'wrong-item');
+        const userAns = userAnswers[i] === -1 ? '未作答' : `${labels[userAnswers[i]]}. ${q.options[userAnswers[i]]}`;
+        div.innerHTML = `
+            <div class="review-q">${i+1}. ${q.q}</div>
+            <div class="review-a">
+                ${isCorrect
+                    ? `<span class="correct-ans">✅ 你的答案：${userAns}</span>`
+                    : `<span class="wrong-ans">❌ 你的答案：${userAns}</span><br><span class="correct-ans">✅ 正確答案：${labels[q.answer]}. ${q.options[q.answer]}</span>`
+                }
+            </div>`;
+        review.appendChild(div);
+    });
+}
+
+function retakeExam() {
+    document.getElementById('resultScreen').style.display = 'none';
+    document.getElementById('startScreen').style.display = 'block';
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unit 4 - 面試決勝</title>
+    <script src="auth.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Microsoft JhengHei', 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d1b69 50%, #11022e 100%);
+            min-height: 100vh; overflow: hidden; color: #333;
+        }
+        .nav-bar {
+            position: fixed; top: 0; left: 0; right: 0; height: 60px;
+            background: rgba(255,255,255,0.1); backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0 30px; z-index: 10000;
+        }
+        .nav-title { font-size: 18px; font-weight: 700; color: #fff; }
+        .nav-buttons { display: flex; gap: 10px; }
+        .nav-btn {
+            background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.4);
+            color: white; padding: 6px 14px; border-radius: 20px; cursor: pointer;
+            font-size: 13px; font-weight: 600; text-decoration: none; transition: all 0.3s;
+        }
+        .nav-btn:hover { background: rgba(255,255,255,0.4); transform: translateY(-2px); }
+        .nav-arrow {
+            position: fixed; top: 50%; transform: translateY(-50%);
+            background: rgba(255,255,255,0.2); color: white;
+            width: 55px; height: 55px; border-radius: 50%;
+            border: 2px solid rgba(255,255,255,0.4); font-size: 22px; cursor: pointer;
+            z-index: 9000; transition: all 0.3s; display: flex; align-items: center; justify-content: center;
+        }
+        .nav-arrow:hover { background: rgba(255,255,255,0.4); transform: translateY(-50%) scale(1.1); }
+        .prev-arrow { left: 25px; } .next-arrow { right: 25px; }
+        .nav-arrow:disabled { opacity: 0.3; cursor: not-allowed; }
+        .slide-container { width: 100%; height: 100vh; padding-top: 60px; position: relative; }
+        .slide {
+            position: absolute; top: 60px; left: 0; width: 100%; height: calc(100vh - 60px);
+            display: none; align-items: center; justify-content: center; padding: 40px;
+            opacity: 0; transition: opacity 0.4s ease; z-index: 10;
+        }
+        .slide.active { display: flex; opacity: 1; z-index: 20; }
+        .content-card {
+            background: rgba(255,255,255,0.97); border-radius: 24px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.4); padding: 55px;
+            max-width: 1300px; width: 95%; max-height: 86vh; overflow-y: auto;
+        }
+        h1 { color: #2d1b69; font-size: 50px; margin-bottom: 18px; text-align: center; }
+        h2 { color: #2d1b69; font-size: 34px; margin-bottom: 25px; border-bottom: 3px solid #7c3aed; padding-bottom: 12px; }
+        h3 { color: #2d1b69; font-size: 22px; margin: 20px 0 10px; }
+        p, li { font-size: 18px; line-height: 1.8; color: #444; margin-bottom: 10px; }
+        ul, ol { padding-left: 26px; }
+        .unit-badge {
+            display: inline-block; background: linear-gradient(90deg, #7c3aed, #db2777);
+            color: white; padding: 5px 18px; border-radius: 20px;
+            font-size: 13px; font-weight: 700; letter-spacing: 2px; margin-bottom: 15px;
+        }
+        .box { padding: 22px 28px; border-radius: 14px; margin: 18px 0; border-left: 6px solid; font-size: 17px; }
+        .info { background: #ede9fe; border-color: #7c3aed; color: #4c1d95; }
+        .warning { background: #fff3cd; border-color: #ffc107; color: #856404; }
+        .success { background: #d4edda; border-color: #28a745; color: #155724; }
+        .tip { background: #fce7f3; border-color: #db2777; color: #831843; }
+        .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 18px; }
+        .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 18px; }
+        .card {
+            background: #f5f3ff; border-radius: 14px; padding: 22px;
+            border: 1px solid #ddd6fe; transition: transform 0.3s;
+        }
+        .card:hover { transform: translateY(-5px); }
+        .card h3 { margin-top: 0; font-size: 19px; }
+        .think-box {
+            background: linear-gradient(135deg, #2d1b69, #4c1d95);
+            border-radius: 16px; padding: 28px; color: white; margin: 22px 0;
+        }
+        .think-box h3 { color: #c4b5fd; margin-top: 0; }
+        .star-ai {
+            background: linear-gradient(135deg, #7c3aed, #db2777);
+            border-radius: 16px; padding: 30px; color: white; margin: 20px 0;
+        }
+        .star-ai h3 { color: white; margin-top: 0; font-size: 24px; }
+        .star-row {
+            display: flex; gap: 12px; align-items: flex-start; margin-bottom: 15px;
+        }
+        .star-letter {
+            background: rgba(255,255,255,0.25); border-radius: 50%;
+            width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;
+            font-size: 20px; font-weight: 800; flex-shrink: 0;
+        }
+        .answer-box {
+            background: linear-gradient(135deg, #1a1a2e, #2d1b69);
+            border-radius: 16px; padding: 30px; color: white; margin: 20px 0;
+            border-left: 6px solid #7c3aed;
+        }
+        .answer-box .label {
+            font-size: 12px; color: rgba(255,255,255,0.5); letter-spacing: 2px;
+            margin-bottom: 10px; font-weight: 700;
+        }
+        .answer-box p { color: rgba(255,255,255,0.9); font-size: 17px; line-height: 1.8; margin: 0; }
+        .question-card {
+            background: linear-gradient(135deg, #fce7f3, #ede9fe);
+            border-radius: 14px; padding: 22px; margin-bottom: 18px;
+            border-left: 5px solid #db2777;
+        }
+        .question-card h3 { color: #831843; margin-top: 0; }
+        .indicators {
+            position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%);
+            display: flex; gap: 10px; z-index: 4000;
+            padding: 8px 22px; background: rgba(0,0,0,0.3); border-radius: 30px;
+        }
+        .dot { width: 10px; height: 10px; background: rgba(255,255,255,0.4); border-radius: 50%; cursor: pointer; }
+        .dot.active { background: #7c3aed; transform: scale(1.3); }
+
+        .next-part-banner {
+            background: linear-gradient(135deg, #1a1a1a, #2d1b69);
+            border-radius: 20px; padding: 32px; text-align: center; margin-top: 25px;
+            border: 2px solid rgba(124,58,237,0.5);
+        }
+        .next-part-banner p { color: rgba(255,255,255,0.7); font-size: 15px; margin-bottom: 15px; }
+        .next-part-btn {
+            display: inline-block; background: linear-gradient(90deg, #7c3aed, #db2777);
+            color: white; padding: 14px 48px; border-radius: 40px;
+            font-size: 19px; font-weight: 800; text-decoration: none;
+            transition: all 0.3s; box-shadow: 0 8px 25px rgba(124,58,237,0.5);
+        }
+        .next-part-btn:hover { transform: translateY(-4px); box-shadow: 0 12px 35px rgba(124,58,237,0.65); }
+    </style>
+</head>
+<body>
+<script>requireAuth();</script>
+
+<div class="nav-bar">
+    <div class="nav-title">🎤 Unit 4 — 面試決勝</div>
+    <div class="nav-buttons">
+        <a href="index.html" class="nav-btn">🏠 首頁</a>
+        <a href="Unit3_成果紀錄.html" class="nav-btn">← Unit 3</a>
+        <button class="nav-btn" onclick="toggleFullscreen()">🖥️ 全螢幕</button>
+        <a href="exam.html" class="nav-btn">認證考試 →</a>
+    </div>
+</div>
+
+<div class="slide-container">
+
+    <!-- Slide 1: 封面 -->
+    <div class="slide active">
+        <div class="content-card" style="text-align:center; display:flex; flex-direction:column; justify-content:center; align-items:center;">
+            <div class="unit-badge">AI 認知學習應用認證 ｜ 第二章</div>
+            <h1 style="font-size:54px;">🎤 Unit 4</h1>
+            <h2 style="border:none; font-size:36px; color:#2d1b69;">面試決勝</h2>
+            <p style="font-size:22px; color:#666;">AI 應用的完美答題公式</p>
+            <p style="max-width:650px; font-size:17px; color:#888; margin-top:20px; line-height:1.8;">
+                掌握面試官真正想聽什麼<br>用 STAR-AI 框架打造個人專屬的必殺回答
+            </p>
+            <div style="display:flex; gap:15px; margin-top:28px; flex-wrap:wrap; justify-content:center;">
+                <span style="background:#7c3aed; color:white; padding:5px 15px; border-radius:20px; font-weight:700;">STAR-AI 框架</span>
+                <span style="background:#db2777; color:white; padding:5px 15px; border-radius:20px; font-weight:700;">答題公式</span>
+                <span style="background:#4c1d95; color:white; padding:5px 15px; border-radius:20px; font-weight:700;">模擬演練</span>
+            </div>
+                    </div>
+    </div>
+
+    <!-- Slide 2: 面試官的真實想法 -->
+    <div class="slide">
+        <div class="content-card">
+            <h2>🧐 面試官在想什麼？</h2>
+            <div class="think-box">
+                <h3>當教授問「你如何使用 AI 學習？」</h3>
+                <p style="color:rgba(255,255,255,0.85);">他其實想知道的是：</p>
+            </div>
+            <div class="grid3" style="margin-top:15px;">
+                <div class="card">
+                    <h3>🔍 真實性</h3>
+                    <p>你真的有用 AI 學習，還是在亂說？有沒有具體案例？</p>
+                </div>
+                <div class="card">
+                    <h3>🧠 反思力</h3>
+                    <p>你只是「用過」，還是有反思、有判斷？你懂 AI 的限制嗎？</p>
+                </div>
+                <div class="card">
+                    <h3>🎯 主動性</h3>
+                    <p>你是被動接觸 AI，還是主動探索？你有沒有自己的使用策略？</p>
+                </div>
+                <div class="card">
+                    <h3>🔮 前瞻性</h3>
+                    <p>你如何看待 AI 對本科系的影響？你有沒有思考未來？</p>
+                </div>
+                <div class="card">
+                    <h3>⚖️ 批判力</h3>
+                    <p>你知道 AI 的限制和風險嗎？你不會盲目相信 AI 嗎？</p>
+                </div>
+                <div class="card">
+                    <h3>📈 成長力</h3>
+                    <p>使用 AI 讓你有哪些可見的進步？有具體成果嗎？</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 3: 常見失敗回答 -->
+    <div class="slide">
+        <div class="content-card">
+            <h2>❌ 常見的「答了等於沒答」</h2>
+            <div class="grid2">
+                <div>
+                    <div class="question-card">
+                        <h3>問：你如何使用 AI 輔助學習？</h3>
+                    </div>
+                    <div class="box warning">
+                        <strong>差答案 A：</strong><br>「我很常用 ChatGPT，很方便。」
+                        <p style="margin-top:8px; font-size:15px; color:#856404;">❌ 沒有具體案例，教授聽完無法評估你</p>
+                    </div>
+                    <div class="box warning" style="margin-top:10px;">
+                        <strong>差答案 B：</strong><br>「我用 AI 幫我寫作業，省很多時間。」
+                        <p style="margin-top:8px; font-size:15px; color:#856404;">❌ 引發學術誠信疑慮，非常危險</p>
+                    </div>
+                    <div class="box warning" style="margin-top:10px;">
+                        <strong>差答案 C：</strong><br>「AI 很厲害，我覺得未來一定很重要。」
+                        <p style="margin-top:8px; font-size:15px; color:#856404;">❌ 空泛，沒有個人觀點和具體經驗</p>
+                    </div>
+                </div>
+                <div>
+                    <div class="box info">
+                        <h3 style="color:#4c1d95; margin-top:0;">好答案的三個條件</h3>
+                        <ol style="color:#4c1d95;">
+                            <li><strong>具體情境</strong>：說清楚在哪個科目、什麼狀況</li>
+                            <li><strong>可見成果</strong>：你的能力或成績有什麼可量化的提升</li>
+                            <li><strong>個人反思</strong>：你從中學到什麼、如何看待 AI</li>
+                        </ol>
+                    </div>
+                    <div class="think-box" style="margin-top:20px;">
+                        <h3>記住這個原則</h3>
+                        <p style="color:rgba(255,255,255,0.85);">面試不是考試，沒有標準答案。面試官要看的是<strong>「你這個人」</strong>——你的思考方式、你的主動性、你的反思能力。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 4: STAR-AI 框架 -->
+    <div class="slide">
+        <div class="content-card">
+            <h2>⭐ STAR-AI 答題框架</h2>
+            <p>把 STAR 面試法結合 AI 應用，打造有深度的答題結構：</p>
+            <div class="star-ai">
+                <h3>STAR-AI 框架</h3>
+                <div class="star-row">
+                    <div class="star-letter">S</div>
+                    <div><strong>Situation 情境</strong>：當時的具體學習情況是什麼？（科目、時間、面臨的挑戰）</div>
+                </div>
+                <div class="star-row">
+                    <div class="star-letter">T</div>
+                    <div><strong>Task 任務</strong>：你想解決什麼問題？學習目標是什麼？</div>
+                </div>
+                <div class="star-row">
+                    <div class="star-letter">A</div>
+                    <div><strong>Action 行動</strong>：你如何使用 AI？用了哪個工具、什麼方法？提示詞設計如何？</div>
+                </div>
+                <div class="star-row">
+                    <div class="star-letter">R</div>
+                    <div><strong>Result 成果</strong>：取得了什麼具體成效？能力或成績有什麼可見的變化？</div>
+                </div>
+                <div class="star-row" style="margin-bottom:0;">
+                    <div class="star-letter" style="background:rgba(255,255,255,0.4);">AI</div>
+                    <div><strong>AI Insight 洞察</strong>：你從這次使用 AI 的經驗中，有什麼反思？你如何看待 AI 的角色？</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 5: 範例答題 -->
+    <div class="slide">
+        <div class="content-card">
+            <h2>📝 STAR-AI 完整範例答題</h2>
+            <div class="question-card">
+                <h3>面試問題：你有沒有使用 AI 工具來幫助學習？可以給我一個具體的例子嗎？</h3>
+            </div>
+            <div class="answer-box">
+                <div class="label">STAR-AI 範例回答（約 90 秒）</div>
+                <p>
+                    <strong style="color:#c4b5fd;">【S 情境】</strong>升高三準備學測時，我在生物科的細胞分裂這個單元一直背不好，尤其是減數分裂的步驟老是搞混。<br><br>
+                    <strong style="color:#c4b5fd;">【T 任務】</strong>我需要真正「理解」而不是死背，才能應對各種題型的變化。<br><br>
+                    <strong style="color:#c4b5fd;">【A 行動】</strong>我使用 Claude AI，透過費曼技巧，先用自己的話向 AI 解釋這個概念，讓 AI 聽完後指出我理解有誤的地方。我也要求 AI 出題考我，測試自己是否真正掌握。<br><br>
+                    <strong style="color:#c4b5fd;">【R 成果】</strong>這個方法讓我在兩天內找到了自己的盲點，生物月考從 72 分提升到 91 分。<br><br>
+                    <strong style="color:#c4b5fd;">【AI 洞察】</strong>這次經驗讓我體會到，AI 最大的價值不是幫你記答案，而是作為一個永遠耐心的對話夥伴，幫助你發現自己的思考盲點。當然，我也注意到 AI 偶爾會說錯，所以我都會交叉查證教科書。
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 6: 常見面試題 Q&A -->
+    <div class="slide">
+        <div class="content-card">
+            <h2>❓ 常見面試題 × 答題要點</h2>
+            <div class="grid2">
+                <div>
+                    <div class="question-card">
+                        <h3>Q1：你怎麼看待 AI 取代人類工作？</h3>
+                        <p style="font-size:15px; color:#666;"><strong>答題要點：</strong>承認變化 + 說明哪些能力 AI 無法取代 + 你打算如何因應 + 連結到本科系</p>
+                    </div>
+                    <div class="question-card">
+                        <h3>Q2：你未來在本科系會如何應用 AI？</h3>
+                        <p style="font-size:15px; color:#666;"><strong>答題要點：</strong>先說明了解本科系的 AI 應用趨勢 + 具體說明你想怎麼用 + 展現學習熱情</p>
+                    </div>
+                </div>
+                <div>
+                    <div class="question-card">
+                        <h3>Q3：AI 會不會讓學生失去思考能力？</h3>
+                        <p style="font-size:15px; color:#666;"><strong>答題要點：</strong>承認風險 + 說明如何避免（主動思考、批判驗證）+ 你的個人使用原則</p>
+                    </div>
+                    <div class="question-card">
+                        <h3>Q4：你使用 AI 有沒有遇到問題或失敗？</h3>
+                        <p style="font-size:15px; color:#666;"><strong>答題要點：</strong>誠實說出問題（如 AI 幻覺）+ 你如何發現並應對 + 從中學到什麼</p>
+                    </div>
+                </div>
+            </div>
+            <div class="box tip" style="margin-top:15px;">
+                <strong>萬能加分句：</strong>「我認為 AI 讓我有更多時間去思考更高層次的問題，而不是在低層次的資訊搜尋上花費時間。」
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 7: 互動腳本練習 -->
+    <div class="slide">
+        <div class="content-card">
+            <h2>✍️ 現在就來寫你的 90 秒腳本</h2>
+            <p style="color:#666; margin-bottom:18px;">先在這裡快速起草，完成後再謄到學習單 3</p>
+            <div style="display:flex; flex-direction:column; gap:12px;">
+                <div style="display:grid; grid-template-columns:repeat(5,1fr); gap:8px;">
+                    <div style="background:#ede9fe; border-radius:8px; padding:8px; text-align:center; font-size:13px; font-weight:700; color:#4c1d95;">S 情境</div>
+                    <div style="background:#fce7f3; border-radius:8px; padding:8px; text-align:center; font-size:13px; font-weight:700; color:#831843;">T 任務</div>
+                    <div style="background:#dcfce7; border-radius:8px; padding:8px; text-align:center; font-size:13px; font-weight:700; color:#14532d;">A 行動</div>
+                    <div style="background:#fef3c7; border-radius:8px; padding:8px; text-align:center; font-size:13px; font-weight:700; color:#78350f;">R 成果</div>
+                    <div style="background:#ffe4e6; border-radius:8px; padding:8px; text-align:center; font-size:13px; font-weight:700; color:#881337;">AI 洞察</div>
+                </div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                    <div>
+                        <input type="text" style="width:100%; border:2px solid #ddd6fe; border-radius:8px; padding:9px 12px; font-family:inherit; font-size:14px; outline:none;" placeholder="S：情境（科目、挑戰）" oninput="updateScript()">
+                    </div>
+                    <div>
+                        <input type="text" style="width:100%; border:2px solid #fbcfe8; border-radius:8px; padding:9px 12px; font-family:inherit; font-size:14px; outline:none;" placeholder="T：任務（學習目標）" oninput="updateScript()">
+                    </div>
+                    <div>
+                        <input type="text" style="width:100%; border:2px solid #bbf7d0; border-radius:8px; padding:9px 12px; font-family:inherit; font-size:14px; outline:none;" placeholder="A：行動（AI 工具 + 方法）" oninput="updateScript()">
+                    </div>
+                    <div>
+                        <input type="text" style="width:100%; border:2px solid #fde68a; border-radius:8px; padding:9px 12px; font-family:inherit; font-size:14px; outline:none;" placeholder="R：成果（具體數字）" oninput="updateScript()">
+                    </div>
+                </div>
+                <textarea id="aiInsight" style="width:100%; border:2px solid #fecdd3; border-radius:8px; padding:10px 12px; font-family:inherit; font-size:14px; outline:none; resize:vertical; min-height:60px;" placeholder="AI 洞察：這次經驗讓我認識到..." oninput="updateScript()"></textarea>
+                <div style="background:#f5f3ff; border-radius:12px; padding:18px; border:2px solid #c4b5fd;">
+                    <div style="font-size:12px; font-weight:700; color:#7c3aed; margin-bottom:8px;">✨ 你的腳本預覽</div>
+                    <div id="scriptPreview" style="font-size:15px; color:#333; line-height:1.8; min-height:60px; color:#555; font-style:italic;">填寫上方欄位，腳本會自動組合...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 8: 模擬面試說明 -->
+    <div class="slide" id="presentation">
+        <div class="content-card">
+            <h2>🎭 模擬面試 × 同儕互評</h2>
+            <div class="grid2">
+                <div>
+                    <h3>流程說明</h3>
+                    <ol>
+                        <li>每人上台 3 分鐘發表</li>
+                        <li>模擬面試情境：台下 2 人扮演「教授」</li>
+                        <li>發表後，評審提一個追問</li>
+                        <li>台下同學填寫互評表</li>
+                    </ol>
+                </div>
+                <div>
+                    <h3>互評標準</h3>
+                    <ul>
+                        <li>是否有具體案例？（25分）</li>
+                        <li>STAR-AI 結構是否清晰？（25分）</li>
+                        <li>有沒有反思和 AI 洞察？（25分）</li>
+                        <li>整體表達是否自然流暢？（25分）</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="box info" style="margin-top:20px;">
+                <strong>提醒：</strong>重點不是「答得完美」，而是「真實自然地說出你自己的故事」。面試官最欣賞的是真誠與反思，不是背稿。
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 9: 認證考試說明 -->
+    <div class="slide" id="cert">
+        <div class="content-card">
+            <h2 id="cert">🏅 AI 認知學習應用認證 考試說明</h2>
+            <div class="star-ai" style="background:linear-gradient(135deg,#1a1a2e,#2d1b69);">
+                <h3 style="color:#ffd200; font-size:26px; text-align:center;">AI Cognitive Learning Application Certification</h3>
+            </div>
+            <div class="grid3" style="margin-top:18px;">
+                <div class="card">
+                    <h3>📋 考試形式</h3>
+                    <p>線上測驗，單選題</p>
+                    <p style="font-size:15px; color:#666;">從 40 題題庫中<br>隨機抽選 20 題</p>
+                </div>
+                <div class="card">
+                    <h3>⏱️ 考試時間</h3>
+                    <p>30 分鐘</p>
+                    <p style="font-size:15px; color:#666;">每題 5 分，共 100 分<br>80 分（含）以上通過</p>
+                </div>
+                <div class="card">
+                    <h3>📚 考試範圍</h3>
+                    <p>Unit 1-4 所有內容</p>
+                    <p style="font-size:15px; color:#666;">AI 素養、工具應用<br>學習策略、倫理觀念</p>
+                </div>
+            </div>
+            <div class="box success" style="margin-top:18px;">
+                <strong>通過後：</strong>頒發「AI 認知學習應用認證」實體證書，可放入學習歷程檔案。
+            </div>
+            <div style="text-align:center; margin-top:20px;">
+                <a href="exam.html" style="display:inline-block; background:linear-gradient(135deg,#7c3aed,#db2777); color:white; padding:16px 50px; border-radius:30px; font-size:22px; font-weight:700; text-decoration:none; box-shadow:0 8px 25px rgba(124,58,237,0.5);">
+                    🎯 開始認證考試
+                </a>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<button class="nav-arrow prev-arrow" id="prevBtn" onclick="changeSlide(-1)">❮</button>
+<button class="nav-arrow next-arrow" id="nextBtn" onclick="changeSlide(1)">❯</button>
+<div class="indicators" id="indicatorContainer"></div>
+
+<script>
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.slide');
+    const totalSlides = slides.length;
+    function init() {
+        const c = document.getElementById('indicatorContainer');
+        slides.forEach((_, i) => { const d = document.createElement('div'); d.className = 'dot'; d.onclick = () => goToSlide(i); c.appendChild(d); });
+        showSlide(0);
+        document.addEventListener('keydown', e => { if (e.key === 'ArrowLeft') changeSlide(-1); if (e.key === 'ArrowRight') changeSlide(1); });
+    }
+    function showSlide(i) {
+        if (i < 0) i = 0; if (i >= totalSlides) i = totalSlides - 1;
+        slides.forEach(s => s.classList.remove('active')); slides[i].classList.add('active'); currentSlide = i;
+        document.querySelectorAll('.dot').forEach((d, j) => d.classList.toggle('active', j === i));
+        document.getElementById('prevBtn').disabled = i === 0; document.getElementById('nextBtn').disabled = i === totalSlides - 1;
+    }
+    function changeSlide(dir) { showSlide(currentSlide + dir); }
+    function goToSlide(i) { showSlide(i); }
+    function toggleFullscreen() { if (!document.fullscreenElement) document.documentElement.requestFullscreen(); else document.exitFullscreen(); }
+
+    function updateScript() {
+        const inputs = document.querySelectorAll('.slide.active input[type="text"]');
+        const insight = document.getElementById('aiInsight');
+        if (!insight) return;
+        const vals = Array.from(inputs).map(i => i.value.trim());
+        const preview = document.getElementById('scriptPreview');
+        if (!preview) return;
+        const parts = [];
+        if (vals[0]) parts.push(`在${vals[0]}的時候，`);
+        if (vals[1]) parts.push(`我面臨了${vals[1]}的挑戰。`);
+        if (vals[2]) parts.push(`我使用了${vals[2]}，`);
+        if (vals[3]) parts.push(`最終取得了${vals[3]}的成果。`);
+        if (insight.value.trim()) parts.push(insight.value.trim());
+        preview.textContent = parts.length ? parts.join('') : '填寫上方欄位，腳本會自動組合...';
+        preview.style.fontStyle = parts.length ? 'normal' : 'italic';
+        preview.style.color = parts.length ? '#1a1a2e' : '#555';
+    }
+
+    init();
+</script>
+</body>
+</html>

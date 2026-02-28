@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>學習單 1：AI 學習實作紀錄</title>
+    <script src="auth.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Microsoft JhengHei', 'Segoe UI', Arial, sans-serif;
+            background: #f0f4f8; color: #333; padding: 20px;
+        }
+        .page {
+            max-width: 900px; margin: 0 auto;
+            background: white; border-radius: 16px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+            padding: 50px; margin-bottom: 30px;
+        }
+        .page-header {
+            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+            color: white; border-radius: 12px; padding: 30px; margin-bottom: 35px;
+            text-align: center;
+        }
+        .page-header .school { font-size: 13px; opacity: 0.7; letter-spacing: 2px; margin-bottom: 5px; }
+        .page-header h1 { font-size: 26px; margin-bottom: 5px; }
+        .page-header .sub { font-size: 14px; opacity: 0.8; }
+        .page-header .cert-name {
+            display: inline-block; background: rgba(255,215,0,0.25);
+            border: 1px solid rgba(255,215,0,0.5); border-radius: 20px;
+            padding: 4px 18px; font-size: 13px; color: #ffd200; margin-top: 10px;
+        }
+        .student-info {
+            display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-bottom: 30px;
+        }
+        .info-field {
+            border-bottom: 2px solid #ddd; padding: 8px 0;
+        }
+        .info-label { font-size: 12px; color: #999; margin-bottom: 5px; }
+        .info-input {
+            font-size: 16px; border: none; outline: none; width: 100%;
+            font-family: inherit; background: transparent;
+        }
+        .section-title {
+            background: linear-gradient(90deg, #203a43, #2c5364);
+            color: white; padding: 10px 20px; border-radius: 8px;
+            font-size: 16px; font-weight: 700; margin: 25px 0 15px;
+            display: flex; align-items: center; gap: 10px;
+        }
+        .field-group { margin-bottom: 20px; }
+        .field-label {
+            font-size: 14px; font-weight: 700; color: #555;
+            margin-bottom: 8px; display: flex; align-items: center; gap: 8px;
+        }
+        .field-label .badge {
+            background: #e3f2fd; color: #1565c0; padding: 2px 10px;
+            border-radius: 12px; font-size: 12px; font-weight: 600;
+        }
+        .text-input {
+            width: 100%; border: 2px solid #e0e0e0; border-radius: 10px;
+            padding: 12px 16px; font-size: 15px; font-family: inherit;
+            resize: vertical; min-height: 60px; transition: border-color 0.3s;
+            outline: none;
+        }
+        .text-input:focus { border-color: #2c5364; }
+        .text-input.large { min-height: 100px; }
+        .text-input.xlarge { min-height: 140px; }
+        .hint {
+            font-size: 13px; color: #888; margin-top: 5px; line-height: 1.6;
+            padding-left: 5px; font-style: italic;
+        }
+        .tool-checkboxes {
+            display: flex; flex-wrap: wrap; gap: 10px; margin-top: 8px;
+        }
+        .tool-check {
+            display: flex; align-items: center; gap: 6px; cursor: pointer;
+            background: #f5f5f5; border-radius: 20px; padding: 6px 14px;
+            border: 2px solid #e0e0e0; transition: all 0.2s; font-size: 14px;
+        }
+        .tool-check:hover { border-color: #2c5364; background: #e8f4f8; }
+        .tool-check input { display: none; }
+        .tool-check.checked { background: #2c5364; color: white; border-color: #2c5364; }
+        .rating-bar {
+            display: flex; gap: 10px; margin-top: 8px;
+        }
+        .rating-btn {
+            flex: 1; padding: 10px; text-align: center; border-radius: 10px;
+            border: 2px solid #e0e0e0; cursor: pointer; font-size: 14px;
+            transition: all 0.2s; background: white;
+        }
+        .rating-btn:hover { border-color: #2c5364; background: #e8f4f8; }
+        .rating-btn.selected { background: #2c5364; color: white; border-color: #2c5364; }
+        .divider { border: none; border-top: 2px dashed #e0e0e0; margin: 30px 0; }
+        .submit-area { text-align: center; margin-top: 35px; }
+        .btn-print {
+            background: linear-gradient(135deg, #0f2027, #2c5364);
+            color: white; border: none; padding: 14px 40px; border-radius: 30px;
+            font-size: 16px; font-weight: 700; cursor: pointer; margin: 0 10px;
+            transition: all 0.3s;
+        }
+        .btn-print:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(15,32,39,0.3); }
+        .btn-clear {
+            background: #f0f0f0; color: #555; border: none; padding: 14px 30px;
+            border-radius: 30px; font-size: 15px; cursor: pointer; margin: 0 10px;
+            transition: all 0.3s;
+        }
+        .btn-clear:hover { background: #e0e0e0; }
+        .footer-note {
+            text-align: center; font-size: 13px; color: #999; margin-top: 20px;
+        }
+        @media print {
+            body { background: white; padding: 0; }
+            .page { box-shadow: none; margin: 0; border-radius: 0; }
+            .submit-area { display: none; }
+            .text-input { border: 1px solid #ccc; }
+        }
+    </style>
+</head>
+<body>
+<script>requireAuth();</script>
+
+<div class="page">
+    <div class="page-header">
+        <div class="school">AI 認知學習應用認證</div>
+        <h1>📘 學習單 1：AI 學習實作紀錄</h1>
+        <div class="sub">AI Cognitive Learning Application Certification</div>
+        <div class="cert-name">AI 認知學習應用認證</div>
+    </div>
+
+    <!-- 學生基本資料 -->
+    <div class="student-info">
+        <div class="info-field">
+            <div class="info-label">姓名</div>
+            <input class="info-input" type="text" placeholder="請填寫姓名">
+        </div>
+        <div class="info-field">
+            <div class="info-label">班級</div>
+            <input class="info-input" type="text" placeholder="年 班">
+        </div>
+        <div class="info-field">
+            <div class="info-label">紀錄日期</div>
+            <input class="info-input" type="date" id="dateInput">
+        </div>
+    </div>
+
+    <!-- Part 1: 使用情境 -->
+    <div class="section-title">📌 Part 1：使用情境</div>
+
+    <div class="field-group">
+        <div class="field-label">使用的 AI 工具 <span class="badge">請勾選</span></div>
+        <div class="tool-checkboxes" id="toolCheckboxes">
+            <label class="tool-check"><input type="checkbox">ChatGPT</label>
+            <label class="tool-check"><input type="checkbox">Claude</label>
+            <label class="tool-check"><input type="checkbox">Gemini</label>
+            <label class="tool-check"><input type="checkbox">Copilot</label>
+            <label class="tool-check"><input type="checkbox">NotebookLM</label>
+            <label class="tool-check"><input type="checkbox">Perplexity</label>
+            <label class="tool-check"><input type="checkbox">Canva AI</label>
+            <label class="tool-check"><input type="checkbox" id="otherCheck">其他</label>
+        </div>
+        <input type="text" class="text-input" id="otherTool" placeholder="其他工具名稱..." style="margin-top:10px; min-height:auto; display:none;">
+    </div>
+
+    <div class="field-group">
+        <div class="field-label">科目 / 主題</div>
+        <input type="text" class="text-input" style="min-height:auto;" placeholder="例：生物 / 細胞分裂單元">
+    </div>
+
+    <div class="field-group">
+        <div class="field-label">學習目標與遇到的問題</div>
+        <textarea class="text-input large" placeholder="你想學什麼？或遇到了什麼學習困難？例：我背不起來減數分裂第一次分裂和第二次分裂的差別..."></textarea>
+        <div class="hint">說明你當時的學習情境，越具體越好（What happened?）</div>
+    </div>
+
+    <!-- Part 2: 學習過程 -->
+    <div class="section-title">🔄 Part 2：學習過程</div>
+
+    <div class="field-group">
+        <div class="field-label">你輸入給 AI 的提示詞（Prompt）</div>
+        <textarea class="text-input xlarge" placeholder="把你輸入給 AI 的完整提示詞貼在這裡，或用自己的話描述你怎麼跟 AI 說的..."></textarea>
+        <div class="hint">完整的提示詞紀錄，是日後分析自己進步的重要依據</div>
+    </div>
+
+    <div class="field-group">
+        <div class="field-label">AI 的回應摘要（最重要的部分）</div>
+        <textarea class="text-input xlarge" placeholder="AI 給了你什麼回答？哪個部分最有幫助？哪個部分你覺得有問題或不夠準確？"></textarea>
+    </div>
+
+    <div class="field-group">
+        <div class="field-label">你如何運用 AI 的回應</div>
+        <textarea class="text-input large" placeholder="你有沒有進一步追問？你用 AI 的答案做了什麼？有沒有去查證 AI 說的內容？"></textarea>
+    </div>
+
+    <!-- Part 3: 學習成果 -->
+    <div class="section-title">🌟 Part 3：學習成果</div>
+
+    <div class="field-group">
+        <div class="field-label">這次使用 AI，你學到了什麼？</div>
+        <textarea class="text-input xlarge" placeholder="具體說明你的收穫：是某個概念終於搞懂了？某個技能有所提升？還是對某個問題有了新的看法？"></textarea>
+    </div>
+
+    <div class="field-group">
+        <div class="field-label">可量化的成果（如有）</div>
+        <input type="text" class="text-input" style="min-height:auto;" placeholder="例：小考從 72 分提升到 89 分 / 完成了原本卡關的作業 / 縮短了複習時間...">
+    </div>
+
+    <div class="field-group">
+        <div class="field-label">這次 AI 使用的有效程度</div>
+        <div class="rating-bar" id="ratingBar">
+            <div class="rating-btn" onclick="setRating(1)">😐<br>不太有用</div>
+            <div class="rating-btn" onclick="setRating(2)">🙂<br>有點幫助</div>
+            <div class="rating-btn" onclick="setRating(3)">😊<br>很有幫助</div>
+            <div class="rating-btn" onclick="setRating(4)">🤩<br>非常有用</div>
+        </div>
+    </div>
+
+    <!-- Part 4: 反思與延伸 -->
+    <div class="section-title">💭 Part 4：反思與延伸</div>
+
+    <div class="field-group">
+        <div class="field-label">你的反思</div>
+        <textarea class="text-input xlarge" placeholder="• 這次使用 AI 的方式有效嗎？為什麼？&#10;• AI 有沒有說錯什麼？你怎麼發現的？&#10;• 下次你會如何改進提示詞？&#10;• 這次的學習對你有什麼啟發？"></textarea>
+        <div class="hint">反思是最重要的一部分，也是你面試時最能展現 AI 素養的地方</div>
+    </div>
+
+    <div class="field-group">
+        <div class="field-label">面試可用的一句話總結</div>
+        <textarea class="text-input" placeholder="用一到兩句話，描述這次 AI 學習的核心價值。例：這次透過 AI 的費曼技巧練習，讓我找到了記憶細胞分裂的盲點，比死背有效率很多..."></textarea>
+        <div class="hint">這句話可以在面試中直接使用，要清楚、具體、有深度</div>
+    </div>
+
+    <hr class="divider">
+
+    <div class="submit-area">
+        <button class="btn-print" onclick="window.print()">🖨️ 列印 / 存成 PDF</button>
+        <button class="btn-clear" onclick="clearForm()">🗑️ 清除重填</button>
+    </div>
+    <div class="footer-note">
+        © 2026 AI 認知學習應用認證課程教材
+    </div>
+</div>
+
+<script>
+    // 自動填入今天日期
+    document.getElementById('dateInput').valueAsDate = new Date();
+
+    // 工具勾選樣式
+    document.querySelectorAll('.tool-check').forEach(label => {
+        label.addEventListener('click', function() {
+            const input = this.querySelector('input');
+            setTimeout(() => {
+                this.classList.toggle('checked', input.checked);
+                if (input.id === 'otherCheck') {
+                    document.getElementById('otherTool').style.display = input.checked ? 'block' : 'none';
+                }
+            }, 10);
+        });
+    });
+
+    // 評分按鈕
+    function setRating(val) {
+        document.querySelectorAll('.rating-btn').forEach((btn, i) => {
+            btn.classList.toggle('selected', i === val - 1);
+        });
+    }
+
+    // 清除表單
+    function clearForm() {
+        if (confirm('確定要清除所有填寫內容嗎？')) {
+            document.querySelectorAll('.text-input, .info-input').forEach(el => el.value = '');
+            document.querySelectorAll('.tool-check').forEach(l => { l.classList.remove('checked'); l.querySelector('input').checked = false; });
+            document.querySelectorAll('.rating-btn').forEach(b => b.classList.remove('selected'));
+            document.getElementById('otherTool').style.display = 'none';
+            document.getElementById('dateInput').valueAsDate = new Date();
+        }
+    }
+</script>
+</body>
+</html>
