@@ -38,6 +38,7 @@ const DEFAULT_ACCOUNTS = {
   's211028@ms.cshs.tc.edu.tw': { password: 's211028', role: 'student', displayName: 's211028', assignedTeacher: null },
   's211258@ms.cshs.tc.edu.tw': { password: 's211258', role: 'student', displayName: 's211258', assignedTeacher: null },
   's211096@ms.cshs.tc.edu.tw': { password: 's211096', role: 'student', displayName: 's211096', assignedTeacher: null },
+  'cshs211@ms.cshs.tc.edu.tw': { password: 'cshs211', role: 'student', displayName: 'cshs211', assignedTeacher: null },
 };
 
 // ── 帳號讀寫 ─────────────────────────────────────────────
